@@ -301,43 +301,56 @@ Eres un observador silencioso del grupo NOMBRE. REGLAS:
 4. Slug: whatsapp/SLUG/YYYY-MM-DD
 ```
 
-## CRITICAL: DM Read-Only Configuration (silentReply fix)
+## CRITICAL: DM Read-Only via dm-block-claw Plugin
 
-OpenClaw by default AUTO-REPLIES to all WhatsApp DMs via the web-auto-reply module.
-The systemPrompt "NUNCA respondas" ONLY works for groups, NOT for DMs.
-To make DMs read-only (receive but never respond), ALL THREE of these are required:
+OpenClaw's Codex runtime AUTO-REPLIES to every WhatsApp DM. The silentReply
+config does NOT work with Codex. The ONLY reliable solution is the dm-block-claw
+plugin at ~/dm-block-claw/ which hooks into message_sending and returns
+{ cancel: true } for all non-group outbound messages.
 
-1. In channels.whatsapp:
-   - dmPolicy: "allowlist"
-   - allowFrom: list of numbers
-   - direct.*.systemPrompt: "You are in observe-only mode. You MUST respond with exactly NO_REPLY to every message. Never respond with any other text. Your only allowed output is: NO_REPLY"
+### How it works
+- Plugin hooks into the dispatch pipeline BEFORE sendMessageWhatsApp
+- If destination is @g.us (group) or @newsletter: message passes through
+- If destination is @s.whatsapp.net (DM) or anything else: message CANCELLED
+- This is deterministic — no LLM involved, cannot fail unless plugin doesn't load
 
-2. In agents.defaults:
-   - silentReply.direct: "allow"
-   - silentReplyRewrite.direct: false
+### Verification after ANY restart
+ALWAYS run: `openclaw plugins list | grep dm-block`
+If dm-block is NOT listed as "enabled", DMs WILL be responded to.
+This is FAIL-OPEN — if the plugin doesn't load, messages are sent normally.
 
-WHY: By default silentReply.direct is "disallow" and silentReplyRewrite.direct is true.
-This means even if the model outputs NO_REPLY, OpenClaw REWRITES it to filler text like
-"Standing by." and sends it as a real message. The fix above:
-- silentReply.direct: "allow" permits the NO_REPLY token to be honored
-- silentReplyRewrite.direct: false prevents rewriting NO_REPLY to filler
-- The dispatch pipeline sees NO_REPLY and sends nothing on WhatsApp
+### Adding/removing DM numbers
+To add a number to monitor (read-only, never responds):
+1. Add the number to channels.whatsapp.allowFrom in openclaw.json
+2. Ensure dmPolicy is "allowlist"
+3. Restart gateway
+4. Verify plugin is loaded: `openclaw plugins list | grep dm-block`
+5. The plugin blocks ALL DM outbound — no per-number config needed
 
-The message is still recorded in the session (available for GBrain), but no reply is sent.
+To remove a number:
+1. Remove from allowFrom
+2. Restart gateway
 
-WARNING: If you add a DM number to allowFrom WITHOUT these settings, the bot WILL respond.
+WARNING: If dmPolicy is "allowlist" and dm-block-claw plugin is NOT loaded,
+the bot WILL respond to every DM. Always verify plugin after restart.
+
+### Plugin files
+- ~/dm-block-claw/index.js — the hook (10 lines of logic)
+- ~/dm-block-claw/openclaw.plugin.json — plugin manifest
+- ~/dm-block-claw/package.json — plugin metadata
 
 ## After ANY change
 
 MANDATORY — do ALL of these automatically, do NOT ask the user:
-1. Restart: systemctl --user restart openclaw-gateway
-2. Verify: openclaw channels status --channel whatsapp
-3. Regenerate ~/whatsapp-status.md with fresh data
-4. Update guide in gbrain
-5. Copy to repo and push to github.com/durang/whatsapp-monitor
-6. Save history snapshot if significant change
+1. Restart: `systemctl --user restart openclaw-gateway`
+2. Verify WhatsApp: `openclaw channels status --channel whatsapp`
+3. Verify plugin: `openclaw plugins list | grep dm-block` (MUST show "enabled")
+4. Regenerate ~/whatsapp-status.md with fresh data
+5. Update GBrain guide
+6. Copy to repo and push to github.com/durang/whatsapp-monitor
+7. Save history snapshot if significant change
 
-IMPORTANT: Never ask "do you want me to update the dashboard?" — just do it.
+IMPORTANT: Never ask "do you want me to update?" — just do it.
 
 ## Trigger phrases
 

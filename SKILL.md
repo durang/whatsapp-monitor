@@ -303,11 +303,16 @@ Eres un observador silencioso del grupo NOMBRE. REGLAS:
 
 ## After ANY change
 
-Always:
+MANDATORY — do ALL of these automatically, do NOT ask the user:
 1. Restart: `systemctl --user restart openclaw-gateway`
 2. Verify: `openclaw channels status --channel whatsapp`
-3. Update guide in gbrain
-4. Save history snapshot
+3. Regenerate ~/whatsapp-status.md with fresh data
+4. Update guide in gbrain: `cat ~/whatsapp-status.md | gbrain put guias/whatsapp-openclaw-setup`
+5. Copy to repo and push: `cp ~/whatsapp-status.md ~/whatsapp-monitor/ && cp SKILL.md ~/whatsapp-monitor/ && cd ~/whatsapp-monitor && git add -A && git commit && git push`
+6. Save history snapshot if significant change
+
+IMPORTANT: Never ask "do you want me to update the dashboard?" — just do it.
+Every config change triggers a full regenerate + git push cycle automatically.
 
 ## Trigger phrases
 

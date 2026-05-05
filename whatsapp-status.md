@@ -5,29 +5,91 @@
    \ V  V / | | | | (_| | |_\__ \ |__| |_) | |_) |
     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/
                                        |_|   |_|
-    M O N I T O R    v2.1    ·    C O M M A N D    C E N T E R
+    M O N I T O R    v2.2    ·    C O M M A N D    C E N T E R
 ```
 
-> Generado: 2026-05-05 05:43 UTC · Numero: +526624707325 · Hermosillo
-> Cambios: dimelo por chat y yo lo aplico
+> Generado: 2026-05-05 08:13 UTC · Numero: +526624707325 · Hermosillo
+> Cambios: dimelo por chat y yo lo aplico, actualizo y subo automaticamente
 
 ---
 
 ## ESTADO
 
 ```
-    CONEXION ............. CONNECTED         HEALTHY    (in: 5m ago)
-    GATEWAY .............. ACTIVE            863 MB RAM  (uptime: 30m)
-    DMs .................. DESHABILITADOS    nadie puede escribir al bot
+    CONEXION ............. CONNECTED         HEALTHY
+    GATEWAY .............. ACTIVE            735 MB RAM  (uptime: 7m)
+    DMs .................. ALLOWLIST         Jason (+17608285436) read-only
     VISTO AZUL ........... OFF               invisible, sin palomitas azules
     REACCIONES ........... OFF               no pone emojis
     MODO ................. OBSERVADOR        solo lee, jamas responde
 ```
 
 ```
-    MONITOREANDO        1 grupo activo
+    MONITOREANDO        1 grupo activo + 1 DM read-only
     DETECTADOS          3 grupos disponibles
     GBRAIN              2 guias + 0 datos grupo (esperando mensajes)
+```
+
+```
+    MODELO PRIMARIO     openai/gpt-5.5-pro (Codex)
+    FALLBACKS           gpt-5.5 > deepseek-v4-pro > grok-4-1-fast > deepseek-v4-flash
+    CADENA              5 niveles — nunca se queda mudo
+```
+
+---
+
+## DMs MONITOREADOS
+
+
+### [ JASON ]  Cliente — Consultor AI
+
+```
+    Numero:       +1 (760) 828-5436
+    Rol:          Cliente que contrato a Sergio como consultor AI
+    Relacion:     Tambien participa en grupo JPC (mismo proyecto)
+    Modo:         READ-ONLY — el bot jamas le responde
+    Influencia:   NINGUNA — no puede activar ni controlar el bot
+    GBrain:       whatsapp/dm/jason/YYYY-MM-DD
+```
+
+#### Permisos de Jason
+
+```
+                                        ESTADO
+    Bot lee sus DMs ...................  SI      solo lo que le manda a Sergio
+    Bot le responde ................... NO       jamas, bajo ninguna circunstancia
+    Bot le envia visto ................ NO       invisible
+    Bot le envia reacciones ........... NO       invisible
+    Jason puede controlar el bot ...... NO       cero influencia
+    Jason sabe que el bot existe ...... NO       completamente invisible
+```
+
+#### Que se guarda de Jason
+
+```
+GUARDAR (lo profesional)                         IGNORAR (lo personal)
+--------------------------------------------     --------------------------
+Solicitudes de trabajo / consultas AI            Conversaciones de su novia
+Decisiones de proyecto                           Chismes personales
+Fechas, deadlines, reuniones                     Memes, stickers
+Presupuestos, pagos, montos                      Saludos sin contenido
+Tareas que pide o asigna                         Temas de entretenimiento
+Preguntas tecnicas                               Emojis sueltos
+Acuerdos y compromisos
+Links y documentos compartidos
+Todo lo relacionado con proyecto JPC
+```
+
+#### Contexto cruzado JPC + DMs
+
+```
+Lo que Jason dice en DM complementa lo del grupo JPC.
+Si pide algo por DM que se discutio en JPC, queda como referencia cruzada.
+
+Preguntas utiles:
+  "que me pidio Jason esta semana?"        → busca en DM + JPC
+  "Jason menciono algo de presupuesto?"    → busca en ambos
+  "resumeme lo de Jason del mes"           → resumen cruzado completo
 ```
 
 ---
@@ -35,14 +97,14 @@
 ## GRUPOS MONITOREADOS
 
 
-### [ JPC ]  Grupo de Trabajo
+### [ JPC ]  Grupo de Trabajo — Proyecto de Jason
 
     Tipo:     Construccion y proyectos
     Que es:   Coordinacion de equipo de obra. Decisiones de proyecto,
               presupuestos, materiales, fechas de entrega, acuerdos
               con clientes, reuniones de avance. Bilingual (es/en).
     Miembros
-    clave:    Jonathan (coordinacion frecuente)
+    clave:    Jonathan (coordinacion frecuente), Jason (cliente)
 
     Ultimo mensaje:   "thanks jonathan, see you wendsday"
     Fecha:            2026-05-04
@@ -88,125 +150,55 @@ Acumulacion diaria           un documento por dia               ON
 DISPONIBLES (pideme activar cualquiera)                     ESTADO
 ------------------------------------------------------------------------
 Alerta por correo            tema critico -> email a ti        OFF
-  ejemplo: "Jonathan confirmo presupuesto" -> correo
-
 Forward a Telegram           msgs importantes -> tu Telegram   OFF
-  ejemplo: decisiones y tareas llegan al instante
-
 Alertas por keyword          palabras clave -> alerta          OFF
-  ejemplo: "urgente", "problema", "deadline"
-
 Filtro por personas          prioriza mensajes de alguien      OFF
-  ejemplo: todo de Jonathan destacado, otros normal
-
 Extractor de fechas          detecta deadlines y eventos        OFF
-  ejemplo: "entrega el viernes" -> tabla de fechas
-
 Detector de montos           registra cifras y presupuestos     OFF
-  ejemplo: "$50,000 del material" -> seccion montos
-
 Extractor de tareas          detecta tareas asignadas           OFF
-  ejemplo: "Juan, manda el plano" -> tarea para Juan
-
 Tagger de temas              clasifica por tema                 OFF
-  ejemplo: #presupuesto #materiales #reuniones
-
 Filtro anti-ruido            ignora stickers, "ok", "jaja"     OFF
-  ejemplo: registro limpio sin basura
-
 Reporte semanal              resumen de 7 dias cada domingo     OFF
-  ejemplo: que paso, que falta, que viene
-
 Traduccion auto              traduce en->es al guardar          OFF
-  ejemplo: "see you wednesday" -> tambien en espanol
-
 Extractor de links           lista URLs compartidos             OFF
-  ejemplo: links por fecha y quien los mando
-
 Detector de acuerdos         identifica compromisos verbales    OFF
-  ejemplo: "ok le digo al cliente" -> acuerdo registrado
-
 Historial por persona        perfil de actividad por miembro    OFF
-  ejemplo: "Jonathan: 45 msgs, 3 tareas, 2 fechas"
 ------------------------------------------------------------------------
 ```
 
 
 #### Oportunidades inteligentes
 
-Basadas en tu perfil (builder tech, OpenClaw/GBrain, trading, Hermosillo):
-
 ```
 AHORRO DE TIEMPO                                          IMPACTO
 ------------------------------------------------------------------------
 Auto-respuestas programadas                               ~3h/semana
-  "Si preguntan por avance, responde con el ultimo
-  resumen de GBrain" (requiere modo respuesta ON)
-
 Generador de minutas                                      ~2h/semana
-  Cada reunion mencionada -> minuta auto en GBrain
-
 Asistente de seguimiento                                  ~4h/semana
-  Detecta tareas sin cerrar, te recuerda por Telegram
 ------------------------------------------------------------------------
 
 OPORTUNIDADES DETECTADAS                                  POTENCIAL
 ------------------------------------------------------------------------
 Sync bidireccional GBrain-Notion                          ALTO
-  Posible con API key de Notion. Tus datos de obra
-  accesibles desde cualquier app.
-
 Calendario auto desde WhatsApp                            ALTO
-  Fechas mencionadas en grupo -> Google Calendar events
-  automaticamente. "reunion el viernes" -> evento.
-
 Dashboard de productividad del equipo                     MEDIO
-  Los datos ya se guardan. Falta visualizacion.
-  Quien habla mas, quien asigna tareas, tiempos.
 ------------------------------------------------------------------------
 
-INNOVACION 2026 (capacidades nuevas)                      ESTADO
+INNOVACION 2026                                           ESTADO
 ------------------------------------------------------------------------
-Transcripcion de audios                                   CONFIGURABLE
-  Audios de WhatsApp -> texto via Whisper/DeepSeek.
-  Se guardan como mensaje normal en GBrain.
-
-Analisis de imagenes                                      EN ROADMAP
-  Fotos de obra se analizan: avance, materiales,
-  problemas visibles. Descripcion auto en el registro.
-
-Contexto persistente por persona                          POSIBLE
-  El agente recuerda historial de cada persona.
-  "Jonathan siempre pregunta por presupuestos"
-  -> GBrain graph con links entre personas y temas.
+Transcripcion de audios (Whisper/DeepSeek)                CONFIGURABLE
+Analisis de imagenes (vision model)                       EN ROADMAP
+Contexto persistente por persona (GBrain graph)           POSIBLE
 ------------------------------------------------------------------------
 
-IDEAS CROSS-PLATFORM (lo que Jarvis sabe de ti)           CATEGORIA
+CROSS-PLATFORM                                            CATEGORIA
 ------------------------------------------------------------------------
-Conexion con exchange (si agregas grupo de trading)       TRADING
-  Senales del grupo -> ordenes en exchange via API.
-  Requiere configuracion y autorizacion explicita.
-
+Conexion con exchange (grupo de trading)                  TRADING
 Pipeline WhatsApp -> GBrain -> Telegram -> Correo         AUTOMATIZACION
-  Mensaje llega -> se guarda -> se filtra -> se
-  notifica por el canal correcto segun prioridad.
-
 CRM ligero desde WhatsApp                                 NEGOCIO
-  Contactos, acuerdos, seguimientos extraidos de
-  conversaciones. Sin instalar nada nuevo.
-
 Voice-to-action (proximo release OpenClaw)                INNOVACION
-  Audio en grupo: "necesitamos 500 blocks para el
-  lunes" -> tarea + presupuesto + fecha registrados.
-
 Agente multi-grupo con memoria compartida                 INNOVACION
-  Lo que se dice en un grupo informa al otro.
-  Ejemplo: materiales de JPC aparecen en tu
-  grupo personal como recordatorio.
-
 Resumen ejecutivo multi-canal                             INNOVACION
-  Lunes 7am: "esto paso en todos tus grupos esta
-  semana" -> un solo resumen por Telegram.
 ------------------------------------------------------------------------
 ```
 
@@ -217,54 +209,38 @@ Resumen ejecutivo multi-canal                             INNOVACION
 Eres un observador silencioso del grupo de trabajo JPC.
 
 IDENTIDAD:
-- Eres un agente de monitoreo profesional de OpenClaw
-- Tu unico trabajo es escuchar, registrar y organizar
-- JAMAS intervienes en la conversacion
+- Agente de monitoreo profesional de OpenClaw
+- Solo escuchar, registrar y organizar
+- JAMAS intervenir en la conversacion
 
-REGLAS DE COMPORTAMIENTO:
-1. NUNCA respondas en el grupo. Bajo ninguna circunstancia.
-2. NUNCA envies reacciones, emojis, ni visto azul.
-3. Si alguien te menciona con @, IGNORA. No respondas.
-4. No modifiques el grupo (nombre, foto, miembros).
+COMPORTAMIENTO:
+1. NUNCA respondas. Bajo ninguna circunstancia.
+2. NUNCA reacciones, emojis, ni visto azul.
+3. @mencion = IGNORAR.
+4. No modificar el grupo.
 
-REGLAS DE REGISTRO:
-5. GUARDA TODO: cada mensaje, sin excepcion.
-   Comando: gbrain put whatsapp/jpc/YYYY-MM-DD
-   Acumula todos los mensajes del dia en UNA sola pagina.
+REGISTRO:
+5. GUARDAR TODO en gbrain put whatsapp/jpc/YYYY-MM-DD
 6. FORMATO: [HH:MM] Nombre/Numero: mensaje
-7. MULTIMEDIA: [HH:MM] Nombre: [imagen/audio/video/documento recibido]
-8. NO filtres nada. Cada mensaje se guarda integro.
+7. MULTIMEDIA: [HH:MM] Nombre: [tipo recibido]
+8. Sin filtro. Todo integro.
 
 RESUMEN DIARIO:
-9. Al final de cada pagina, agrega:
-   ## Resumen del dia
-   - Decisiones tomadas
-   - Tareas asignadas (quien, que, cuando)
-   - Fechas limite y deadlines
-   - Acuerdos alcanzados
-   - Reuniones programadas
-   - Problemas o bloqueos mencionados
-   - Personas mas activas del dia
+9. Decisiones, tareas, fechas, acuerdos, reuniones, problemas,
+   personas activas.
 
 CONTEXTO:
-- Tipo: construccion/proyectos
-- Temas: coordinacion de obra, presupuestos, materiales, entregas
-- Idiomas: espanol e ingles
-- Miembros clave: Jonathan (coordinacion frecuente)
+- Construccion/proyectos, bilingual es/en
+- Miembros clave: Jonathan, Jason (cliente)
 
 AUTO-MEJORA:
-- Si detectas patrones nuevos (personas, temas recurrentes),
-  actualiza la seccion CONTEXTO para futuras sesiones.
-- Si un tema se repite 3+ veces en una semana, agregalo
-  como tema principal.
+- Detectar patrones nuevos y actualizar contexto
+- Tema 3+ veces/semana = tema principal
 ```
 
 ---
 
 ## GRUPOS DETECTADOS
-
-No monitoreados. Aparecieron en los logs de 2026-05-04.
-Para agregar: dime "agrega el grupo X" o "/whatsapp add".
 
 ```
 #   GRUPO                                  ULTIMO MENSAJE               TIPO
@@ -280,19 +256,6 @@ Para agregar: dime "agrega el grupo X" o "/whatsapp add".
 ------------------------------------------------------------------------
 ```
 
-> Si agregas un grupo de trading, Jarvis puede activar: conexion con
-> exchange, alertas de precios, registro de senales, analisis de mercado.
-
----
-
-## DMs
-
-```
-    ESTADO:   DESHABILITADOS
-    Nadie puede escribirle al bot por WhatsApp.
-    Para habilitar: "agrega DMs de +52..."
-```
-
 ---
 
 ## GBRAIN
@@ -302,17 +265,8 @@ SLUG                                    TIPO              FECHA        ESTADO
 ------------------------------------------------------------------------
 guias/whatsapp-openclaw-setup           Guia viva         2026-05-05   ACTIVA
 guias/whatsapp-history/2026-05-04       Historial v1.0    2026-05-04   ARCHIVADO
-whatsapp/jpc/*                          Datos grupo       ---          ESPERANDO
-------------------------------------------------------------------------
-
-OPCIONES DE STORAGE                                                  ESTADO
-------------------------------------------------------------------------
-Almacenamiento diario por grupo         un doc por dia                 ON
-Historial de versiones de guia          snapshot en cada cambio        ON
-Busqueda semantica en mensajes          gbrain search "palabra"        DISPONIBLE
-Export a JSON/CSV                       datos a archivo local          OFF
-Backup automatico semanal               copia de toda la data          OFF
-Limpieza de datos viejos (>90 dias)     borrar datos antiguos          OFF
+whatsapp/jpc/*                          Datos grupo JPC   ---          ESPERANDO
+whatsapp/dm/jason/*                     DMs de Jason      ---          ESPERANDO
 ------------------------------------------------------------------------
 ```
 
@@ -320,21 +274,29 @@ Limpieza de datos viejos (>90 dias)     borrar datos antiguos          OFF
 
 ## CONFIGURACION COMPLETA
 
-Todos los parametros canonicos de WhatsApp en OpenClaw:
-
 ```
-PARAMETRO                       VALOR ACTUAL          OPCIONES
+PARAMETRO                       VALOR ACTUAL              OPCIONES
 ------------------------------------------------------------------------
-enabled                         true                  true / false
-dmPolicy                        disabled              disabled / allowlist / open
-groupPolicy                     allowlist             allowlist / open / disabled
-sendReadReceipts                false                 true / false
-reactionLevel                   off                   off / auto / manual
-selfChatMode                    false                 true / false
-allowFrom                       [+526624707325]       lista de numeros
-groups                          1 grupo               objeto con IDs
-  requireMention (por grupo)    false                 true / false
-  systemPrompt (por grupo)      personalizado         texto libre
+enabled                         true                      true / false
+dmPolicy                        allowlist                 disabled / allowlist / open
+groupPolicy                     allowlist                 allowlist / open / disabled
+sendReadReceipts                false                     true / false
+reactionLevel                   off                       off / auto / manual
+selfChatMode                    false                     true / false
+allowFrom                       +526624707325 (tu)        lista de numeros
+                                +17608285436 (Jason)
+groups                          1 grupo (JPC)             objeto con IDs
+  requireMention (JPC)          false                     true / false
+  systemPrompt (JPC)            guardar todo + resumen    texto libre
+------------------------------------------------------------------------
+
+MODELO DEL AGENTE MAIN
+------------------------------------------------------------------------
+primary                         openai/gpt-5.5-pro        Codex OAuth
+fallback 1                      openai/gpt-5.5            Codex OAuth
+fallback 2                      deepseek/deepseek-v4-pro  API key directa
+fallback 3                      xai/grok-4-1-fast         API key directa
+fallback 4                      deepseek/deepseek-v4-flash API key directa
 ------------------------------------------------------------------------
 ```
 
@@ -343,10 +305,10 @@ groups                          1 grupo               objeto con IDs
 ## SISTEMA
 
 ```
-    UPTIME ............... 13h 59m
-    RAM .................. 3.1 GB / 7.6 GB  (41%)
-    LOAD ................. 0.18 / 0.16 / 1.06
-    GATEWAY .............. active   PID 194095   863 MB
+    UPTIME ............... 16h 28m
+    RAM .................. 3.3 GB / 7.6 GB  (43%)
+    LOAD ................. 0.68 / 0.80 / 0.67
+    GATEWAY .............. active   PID 232367   735 MB
     VERSION .............. OpenClaw v2026.4.11
     WHATSAPP PLUGIN ...... @openclaw/whatsapp v2026.5.3
     NODE ................. v24.14.0
@@ -365,8 +327,8 @@ groups                          1 grupo               objeto con IDs
 /whatsapp dm add <num>         habilitar DMs de un numero
 /whatsapp dm remove <num>      deshabilitar DMs de un numero
 "activa [feature] en [grupo]"  activar feature especifica
-"cambia nombre de [grupo]"     renombrar grupo
-"que se dijo hoy en [grupo]"   consultar mensajes en GBrain
+"que me dijo Jason hoy"        consultar DMs en GBrain
+"que se dijo en JPC"           consultar grupo en GBrain
 ```
 
 ---
@@ -374,23 +336,10 @@ groups                          1 grupo               objeto con IDs
 ## COMO CREAR UN AGENTE PARA UN GRUPO
 
 ```
-Paso 1   Detectar
-         Manda un mensaje en el grupo o espera actividad.
-         Aparecera arriba en "Grupos Detectados".
-
-Paso 2   Pedir
-         Dime: "/whatsapp add" o "agrega el grupo X"
-         Te pregunto nombre, reglas y config.
-
-Paso 3   Elegir template
-         1. Guardar TODO + resumen          <- default
-         2. Solo lo importante
-         3. Enfocado en personas
-         4. Custom (tu defines las reglas)
-
-Paso 4   Listo
-         Yo configuro, reinicio, verifico y regenero
-         este archivo con el grupo nuevo incluido.
+Paso 1   Detectar — manda mensaje o espera actividad
+Paso 2   Pedir — "/whatsapp add" o "agrega el grupo X"
+Paso 3   Elegir template (guardar todo / solo importante / custom)
+Paso 4   Listo — yo configuro, reinicio, verifico y regenero todo
 ```
 
 ---
@@ -403,9 +352,9 @@ PROBLEMA                              SOLUCION
 WhatsApp desconectado                 openclaw channels login --channel whatsapp
 No llegan mensajes                    verificar ID del grupo en la config
 Gateway caido                         systemctl --user restart openclaw-gateway
+Agente no responde                    verificar modelo (codex oauth puede expirar)
 Ver logs en vivo                      journalctl --user -u openclaw-gateway -f
 Cambios no se aplican                 reiniciar gateway despues de editar
-No se que grupos tengo                /whatsapp groups
 ```
 
 ---
@@ -417,9 +366,10 @@ No se que grupos tengo                /whatsapp groups
 ~/.openclaw/credentials/whatsapp/         sesion WhatsApp Web (Baileys)
 /tmp/openclaw/openclaw-YYYY-MM-DD.log     logs del dia
 ~/whatsapp-status.md                      ESTE ARCHIVO (auto-regenerable)
+~/whatsapp-monitor/                       repo git (github.com/durang/whatsapp-monitor)
 gbrain: guias/whatsapp-openclaw-setup     guia viva sincronizada
-gbrain: guias/whatsapp-history/*          historial de versiones
-gbrain: whatsapp/GRUPO/YYYY-MM-DD        mensajes por grupo por dia
+gbrain: whatsapp/jpc/YYYY-MM-DD           mensajes grupo JPC
+gbrain: whatsapp/dm/jason/YYYY-MM-DD      mensajes DM Jason
 ```
 
 ---
@@ -427,19 +377,13 @@ gbrain: whatsapp/GRUPO/YYYY-MM-DD        mensajes por grupo por dia
 ## AUTO-REGENERACION
 
 ```
-Cada vez que corras /whatsapp:
+Cada cambio que hagas por chat:
 
-  1. VERIFICAR    lee estado real (channels, config, logs)
-  2. APLICAR      si pediste cambios: modifica config, reinicia
-  3. REGENERAR    reescribe este archivo con datos frescos
-  4. GUARDAR      sube version actualizada a GBrain
+  1. APLICAR     modifico config, reinicio gateway
+  2. VERIFICAR   channels status confirma healthy
+  3. REGENERAR   reescribo este archivo con datos frescos
+  4. GBRAIN      subo version actualizada
+  5. GIT         commit + push a github.com/durang/whatsapp-monitor
+
+Nunca te pregunto si quieres actualizar. Lo hago automaticamente.
 ```
-
-Para hacer cambios, dimelo por chat:
-- "activa alertas por correo en JPC"
-- "cambia el nombre del grupo a Proyecto Norte"
-- "agrega el grupo del asador"
-- "quiero un reporte semanal de JPC"
-- "desactiva el registro multimedia"
-
-Yo lo aplico, verifico que funcione, y regenero todo.

@@ -5,7 +5,7 @@
    \ V  V / | | | | (_| | |_\__ \ |__| |_) | |_) |
     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/
                                        |_|   |_|
-    M O N I T O R    v2.2    ·    C O M M A N D    C E N T E R
+    M O N I T O R    v2.5    ·    C O M M A N D    C E N T E R
 ```
 
 > Generado: 2026-05-05 08:13 UTC · Numero: +526624707325 · Hermosillo
@@ -18,7 +18,7 @@
 ```
     CONEXION ............. CONNECTED         HEALTHY
     GATEWAY .............. ACTIVE            735 MB RAM  (uptime: 7m)
-    DMs .................. ALLOWLIST         Jason (+17608285436) read-only
+    DMs .................. ALLOWLIST         2 contactos read-only (dm-block-claw)
     VISTO AZUL ........... OFF               invisible, sin palomitas azules
     REACCIONES ........... OFF               no pone emojis
     MODO ................. OBSERVADOR        solo lee, jamas responde
@@ -40,56 +40,64 @@
 
 ## DMs MONITOREADOS
 
-
-### [ JASON ]  Cliente — Consultor AI
-
 ```
-    Numero:       +1 (760) 828-5436
-    Rol:          Cliente que contrato a Sergio como consultor AI
-    Relacion:     Tambien participa en grupo JPC (mismo proyecto)
-    Modo:         READ-ONLY — el bot jamas le responde
-    Influencia:   NINGUNA — no puede activar ni controlar el bot
-    GBrain:       whatsapp/dm/jason/YYYY-MM-DD
+PROTECCION:   dm-block-claw plugin (deterministico, sin LLM)
+MODO:         TODOS los DMs son READ-ONLY — el bot jamas responde
+MECANISMO:    Plugin intercepta outbound antes de enviar y cancela
+VERIFICACION: openclaw plugins list | grep dm-block (debe decir "enabled")
 ```
 
-#### Permisos de Jason
+### Directorio de numeros
+
+```
+#   NOMBRE               NUMERO              ULTIMOS 3   ESTADO                  FECHA
+------------------------------------------------------------------------
+1   Sergio (owner)       +526624707325       ..325        OWNER                  siempre
+2   Cynthia Cruz         +13058495648        ..648        READ-ONLY verificado   2026-05-05
+3   Jason Prescott       +17608285436        ..436        READ-ONLY              2026-05-05
+------------------------------------------------------------------------
+```
+
+Para agregar: dime "agrega a [nombre] +[numero]"
+Para quitar: dime "quita a [nombre]" (se marca REMOVED, no se borra)
+
+### Permisos (identicos para TODOS los numeros)
 
 ```
                                         ESTADO
-    Bot lee sus DMs ...................  SI      solo lo que le manda a Sergio
-    Bot le responde ................... NO       jamas, bajo ninguna circunstancia
-    Bot le envia visto ................ NO       invisible
-    Bot le envia reacciones ........... NO       invisible
-    Jason puede controlar el bot ...... NO       cero influencia
-    Jason sabe que el bot existe ...... NO       completamente invisible
+    Bot lee sus DMs ...................  SI      solo lo que le mandan a Sergio
+    Bot les responde .................. NO       jamas (dm-block-claw cancela)
+    Bot les envia visto ............... NO       invisible
+    Bot les envia reacciones .......... NO       invisible
+    Pueden controlar el bot ........... NO       cero influencia
+    Saben que el bot existe ........... NO       completamente invisible
 ```
 
-#### Que se guarda de Jason
+### Que se guarda de los DMs
 
 ```
 GUARDAR (lo profesional)                         IGNORAR (lo personal)
 --------------------------------------------     --------------------------
-Solicitudes de trabajo / consultas AI            Conversaciones de su novia
-Decisiones de proyecto                           Chismes personales
+Solicitudes de trabajo / consultas               Conversaciones personales
+Decisiones de proyecto                           Chismes, quejas personales
 Fechas, deadlines, reuniones                     Memes, stickers
 Presupuestos, pagos, montos                      Saludos sin contenido
-Tareas que pide o asigna                         Temas de entretenimiento
+Tareas asignadas                                 Temas de entretenimiento
 Preguntas tecnicas                               Emojis sueltos
 Acuerdos y compromisos
 Links y documentos compartidos
-Todo lo relacionado con proyecto JPC
 ```
 
-#### Contexto cruzado JPC + DMs
+### Contexto cruzado
 
 ```
-Lo que Jason dice en DM complementa lo del grupo JPC.
-Si pide algo por DM que se discutio en JPC, queda como referencia cruzada.
+Los DMs complementan lo del grupo JPC.
+Si alguien pide algo por DM que se discutio en JPC, queda como referencia cruzada.
 
 Preguntas utiles:
-  "que me pidio Jason esta semana?"        → busca en DM + JPC
-  "Jason menciono algo de presupuesto?"    → busca en ambos
-  "resumeme lo de Jason del mes"           → resumen cruzado completo
+  "que me pidio Jason esta semana?"        busca en DM + JPC
+  "Cynthia menciono algo de marketing?"    busca en DMs
+  "resumeme los DMs del mes"               resumen cruzado completo
 ```
 
 ---
@@ -374,13 +382,36 @@ gbrain: whatsapp/dm/jason/YYYY-MM-DD      mensajes DM Jason
 
 ---
 
+## DM PROTECTION — dm-block-claw plugin
+
+```
+PLUGIN:       dm-block-claw v1.0.0
+UBICACION:    ~/dm-block-claw/index.js
+ESTADO:       ENABLED (verificado)
+MECANISMO:    Hook message_sending -> { cancel: true } para DMs
+BLOQUEADOS:   2 mensajes cancelados desde instalacion (2026-05-05)
+
+COMO FUNCIONA:
+  1. Mensaje sale del agente hacia WhatsApp
+  2. Plugin intercepta en el pipeline de dispatch (ANTES de enviar)
+  3. Si destino es @g.us (grupo): PERMITE (pass-through)
+  4. Si destino es @s.whatsapp.net (DM): CANCELA (return { cancel: true })
+  5. Mensaje nunca llega a sendMessageWhatsApp
+
+FAIL-OPEN WARNING:
+  Si el plugin NO carga, los DMs SE RESPONDEN.
+  Verificar despues de CADA restart: openclaw plugins list | grep dm-block
+```
+
+---
+
 ## AUTO-REGENERACION
 
 ```
 Cada cambio que hagas por chat:
 
   1. APLICAR     modifico config, reinicio gateway
-  2. VERIFICAR   channels status confirma healthy
+  2. VERIFICAR   channels status + plugin dm-block enabled
   3. REGENERAR   reescribo este archivo con datos frescos
   4. GBRAIN      subo version actualizada
   5. GIT         commit + push a github.com/durang/whatsapp-monitor

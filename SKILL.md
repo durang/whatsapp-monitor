@@ -14,32 +14,6 @@ You are managing the WhatsApp channel on OpenClaw running on Jarvis (EC2).
 
 Never trust cached info. Every invocation MUST run the verification commands below and show REAL state.
 
-## IMPORTANT: Self-regenerating behavior
-
-Changes are made via CHAT (user tells you what to change), NOT by editing the .md file.
-Every time /whatsapp runs, follow this EXACT sequence:
-
-### Step 1 — Collect fresh data
-Run ALL data collection commands (see below) to get real state.
-
-### Step 2 — Apply any requested changes
-If the user asked for changes (add group, activate feature, rename, etc.):
-- Edit openclaw.json as needed
-- Restart gateway: `systemctl --user restart openclaw-gateway`
-- Verify: `openclaw channels status --channel whatsapp`
-
-### Step 3 — Regenerate ~/whatsapp-status.md
-Rewrite the file with fresh data using the EXACT format from the current ~/whatsapp-status.md.
-Preserve all sections: ASCII header, resumen rapido, grupos monitoreados (with full config tables,
-features ON/OFF, oportunidades inteligentes, systemPrompt), grupos detectados, DMs, GBrain storage,
-configuracion completa, sistema, comandos, troubleshooting, archivos clave, auto-regeneracion.
-
-### Step 4 — Update GBrain
-If anything changed, save updated guide to gbrain:
-```bash
-cat ~/whatsapp-status.md | gbrain put guias/whatsapp-openclaw-setup
-```
-
 ## OUTPUT FORMAT — Two parts, always both
 
 ### Part 1: Text response (directly to user)
@@ -68,185 +42,193 @@ Key rules for text response:
 - Listar cada grupo con su estado real (read-only, puede responder, visto on/off, GBrain activo/no)
 - Decir cuantos grupos detectados hay disponibles
 - Mencionar alertas si algo esta mal
-- Mention if any changes were applied
 - Dar el path al .md al final
-- Include the resumen rapido box showing connection, DMs, visto, modo, monitored/detected counts
 
 ### Part 2: Detailed .md report (saved to file)
-Write a complete report to `~/whatsapp-status.md` using the template below.
-The file MUST have:
-- ASCII art WHATSAPP header
-- Editable sections clearly marked
-- Features table per group with ON/OFF toggles
-- Custom rules block per group
-- Sync rules explanation at the bottom
+Write a complete report to `~/whatsapp-status.md` with ALL details:
 
-## FILE TEMPLATE — ~/whatsapp-status.md
-
-Use this EXACT structure (fill with real data):
-
-````markdown
-```
- █     █░ ██░ ██  ▄▄▄     ▄▄▄█████▓  ██████  ▄▄▄       ██▓███   ██▓███
-▓█░ █ ░█░▓██░ ██▒▒████▄   ▓  ██▒ ▓▒▒██    ▒ ▒████▄    ▓██░  ██▒▓██░  ██▒
-▒█░ █ ░█ ▒██▀▀██░▒██  ▀█▄ ▒ ▓██░ ▒░░ ▓██▄   ▒██  ▀█▄  ▓██░ ██▓▒▓██░ ██▓▒
-░█░ █ ░█ ░▓█ ░██ ░██▄▄▄▄██░ ▓██▓ ░   ▒   ██▒░██▄▄▄▄██ ▒██▄█▓▒ ▒▒██▄█▓▒ ▒
-░░██▒██▓ ░▓█▒░██▓ ▓█   ▓██▒ ▒██▒ ░ ▒██████▒▒ ▓█   ▓██▒▒██▒ ░  ░▒██▒ ░  ░
-░ ▓░▒ ▒   ▒ ░░▒░▒ ▒▒   ▓▒█░ ▒ ░░   ▒ ▒▓▒ ▒ ░ ▒▒   ▓▒█░▒▓▒░ ░  ░▒▓▒░ ░  ░
-  ▒ ░ ░   ▒ ░▒░ ░  ▒   ▒▒ ░   ░    ░ ░▒  ░ ░  ▒   ▒▒ ░░▒ ░     ░▒ ░
-  ░   ░   ░  ░░ ░  ░   ▒    ░      ░  ░  ░    ░   ▒   ░░        ░░
-    ░     ░  ░  ░      ░  ░            ░        ░  ░
-```
-
-# 📡 WhatsApp Command Center
-> **Generado:** YYYY-MM-DD HH:MM UTC
-> **Numero vinculado:** +526624707325 (Hermosillo)
-> **Estado:** 🟢/🔴 CONNECTED/DISCONNECTED · HEALTHY/DEGRADED
-> **Gateway:** active/inactive, uptime Xh, XMB RAM
-> **Skill version:** 2.0
+```markdown
+# WhatsApp Monitor — Reporte Completo
+> Generado: YYYY-MM-DD HH:MM UTC
+> Skill version: 1.1
 
 ---
 
-> **⚠️ ESTE ARCHIVO ES EDITABLE Y VIVO**
-> (sync rules explanation here)
+## Estado de Conexion
 
----
+| Campo | Estado | Detalle |
+|---|---|---|
+| Canal | connected/disconnected | Verificado via openclaw channels status |
+| Numero | +526624707325 | Personal, Hermosillo |
+| Health | healthy/degraded/offline | Ultimo check |
+| Ultimo mensaje recibido | Xm ago | Timestamp |
+| Sesion | linked/unlinked | Baileys WhatsApp Web |
+| Gateway | active/inactive | systemd service |
 
-## 📊 Estado General
-(connection status block + settings table)
+## Configuracion Global
 
----
+| Setting | Valor | Que significa | Se puede cambiar |
+|---|---|---|---|
+| enabled | true | Canal activo | /whatsapp disable |
+| dmPolicy | disabled | No recibe DMs | /whatsapp dm add <numero> |
+| groupPolicy | allowlist | Solo grupos listados | Agregar con /whatsapp add |
+| sendReadReceipts | false | Sin visto azul, invisible | Config en openclaw.json |
+| reactionLevel | off | No pone emojis | Config en openclaw.json |
+| selfChatMode | false | Escucha grupos | Config en openclaw.json |
+| pluginHooks.messageReceived | true/false | GBrain capture | Config en openclaw.json |
+| allowFrom | [+526624707325] | Tu numero | Config en openclaw.json |
 
-## 📋 GRUPOS MONITOREADOS
+## Grupos Monitoreados (detalle)
 
-### 🏗️ NOMBRE — Descripcion corta (EDITABLE)
-
+### Grupo: JPC
 | Campo | Valor |
 |---|---|
-| **Nombre** | NOMBRE |
-| **ID** | `ID@g.us` |
-| **Descripcion** | (EDITABLE — descripcion del grupo) |
-| **Ultimo mensaje** | "texto..." (fecha) |
-| **GBrain slug** | `whatsapp/slug/YYYY-MM-DD` |
+| ID | 120363425126131671@g.us |
+| Modo | read-only (observador silencioso) |
+| Responde en grupo | NO (systemPrompt lo prohibe) |
+| Visto azul | NO (sendReadReceipts: false) |
+| Reacciones | NO (reactionLevel: off) |
+| requireMention | false (lee todo) |
+| GBrain slug | whatsapp/jpc/YYYY-MM-DD |
+| Que guarda | TODO + resumen importante |
+| Ultimo mensaje | "texto..." |
+| SystemPrompt completo | (pegar el prompt entero) |
 
-**Resumen reciente:** (EDITABLE)
-> Parrafo breve de contexto reciente del grupo.
+(repetir para cada grupo monitoreado)
 
-#### Permisos y modo
-(table: leer, responder, visto, reacciones, guardar, mencion)
+## Grupos Detectados (no monitoreados)
 
-#### Features activas
-(table of ON features)
+| # | ID | Ultimo mensaje | Cuando | Como agregar |
+|---|---|---|---|---|
+| 1 | 120363...@g.us | "texto..." | hace X | /whatsapp add |
+| 2 | ... | ... | ... | /whatsapp add |
 
-#### Features disponibles (se pueden activar)
-(table with ⬜ OFF toggles — user can change to ✅ ON)
+## DMs Monitoreados
 
-Features list:
-- 📧 Alerta por correo — Cuando se mencione un tema critico, envia correo
-- 📱 Forward a Telegram — Reenvia mensajes importantes a Telegram
-- 🔍 Filtro por personas — Prioriza mensajes de personas especificas
-- 🚨 Alertas por keyword — Alerta cuando se mencionen palabras clave
-- 📅 Extractor de fechas — Detecta y lista fechas/deadlines
-- 💰 Detector de montos — Detecta y registra montos/presupuestos
+| Numero | Estado | Desde cuando |
+|---|---|---|
+| (ninguno si dmPolicy=disabled) | | |
 
-#### Reglas custom (EDITABLE)
+## GBrain Storage
+
+| Slug | Tipo | Ultima actualizacion | Tamano |
+|---|---|---|---|
+| guias/whatsapp-openclaw-setup | Guia | fecha | X chunks |
+| guias/whatsapp-history/YYYY-MM-DD | Historial | fecha | X chunks |
+| whatsapp/jpc/YYYY-MM-DD | Datos grupo | fecha o "sin datos" | X chunks |
+
+## Templates de SystemPrompt disponibles
+
+### 1. Guardar todo + resumen (DEFAULT)
+Guarda cada mensaje + resumen diario de lo importante.
+
+### 2. Solo lo importante
+Solo decisiones, tareas, fechas, acuerdos.
+
+### 3. Enfocado en personas
+Guarda todo de personas especificas, solo importante de los demas.
+
+## Comandos disponibles
+
+| Comando | Que hace |
+|---|---|
+| /whatsapp | Este dashboard completo |
+| /whatsapp add | Agregar grupo al monitoreo |
+| /whatsapp remove | Quitar grupo del monitoreo |
+| /whatsapp groups | Solo tabla de grupos |
+| /whatsapp guide | Mostrar guia de GBrain |
+| /whatsapp dm add <num> | Monitorear DMs de un numero |
+| /whatsapp dm remove <num> | Dejar de monitorear DMs |
+
+## Como crear/configurar un agente para un grupo nuevo
+
+1. Obtener ID: mandar mensaje en el grupo o esperar que alguien mande
+2. Verificar ID: grep "@g.us" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | sort -u
+3. Decidir reglas: guardar todo, solo importante, o enfocado en personas
+4. Agregar a config: editar openclaw.json o pedir /whatsapp add
+5. Reiniciar: systemctl --user restart openclaw-gateway
+6. Verificar: openclaw channels status --channel whatsapp
+7. Actualizar guia en GBrain
+
+## Troubleshooting
+
+| Problema | Solucion |
+|---|---|
+| WhatsApp desconectado | openclaw channels login --channel whatsapp (re-escanear QR) |
+| No llegan mensajes | Verificar groupPolicy y que ID este en groups |
+| pluginHooks null | Agregar pluginHooks.messageReceived: true en config |
+| Gateway caido | systemctl --user restart openclaw-gateway |
+| Quiero ver logs | journalctl --user -u openclaw-gateway -f \| grep whatsapp |
+
+## Archivos clave
+
+| Archivo | Que es |
+|---|---|
+| ~/.openclaw/openclaw.json | Config principal |
+| ~/.openclaw/credentials/whatsapp/ | Credenciales sesion |
+| /tmp/openclaw/openclaw-YYYY-MM-DD.log | Logs del dia |
+| ~/whatsapp-status.md | Este reporte |
+| gbrain: guias/whatsapp-openclaw-setup | Guia viva |
+| gbrain: guias/whatsapp-history/ | Historial de cambios |
 ```
-# Agrega reglas aqui. Formato: una regla por linea, espanol natural.
-# Se aplicaran en la proxima sincronizacion con /whatsapp.
-```
 
-#### SystemPrompt completo
-(the full prompt in a code block)
-
----
-
-(repeat for each monitored group)
-
-## 🔍 GRUPOS DETECTADOS
-(table of unmonitored groups seen in logs)
-
-## 📨 DMs
-(DM status)
-
-## 🧠 GBrain Storage
-(table of stored slugs)
-
-## 🖥️ Sistema
-(system metrics)
-
-## 🛠️ Comandos Disponibles
-(commands table)
-
-## 📖 Como Crear un Agente para un Grupo Nuevo
-(step by step guide)
-
-## 🔧 Troubleshooting
-(problems + solutions table)
-
-## 📁 Archivos Clave
-(paths table)
-
-## 🔄 Reglas de Sincronizacion
-(explanation of what's editable and what gets overwritten)
-````
+Write this to `~/whatsapp-status.md` on jarvis via SSH, then tell the user the path.
 
 ## Data collection commands
 
-Run ALL of these to get real data. OpenClaw runs LOCALLY (not via SSH):
+Run ALL of these on jarvis via SSH to get real data:
 
 ```bash
 # 1. Channel status
-openclaw channels status --channel whatsapp 2>&1 | grep -i whatsapp
+ssh jarvis 'openclaw channels status --channel whatsapp 2>&1 | grep -i whatsapp'
 
 # 2. Current config
-python3 -c "
+ssh jarvis 'python3 -c "
 import json
-with open('/home/ec2-user/.openclaw/openclaw.json') as f:
+with open(\"/home/ec2-user/.openclaw/openclaw.json\") as f:
     cfg = json.load(f)
-wa = cfg.get('channels', {}).get('whatsapp', {})
-groups = wa.get('groups', {})
-print('ENABLED:', wa.get('enabled'))
-print('DM_POLICY:', wa.get('dmPolicy'))
-print('GROUP_POLICY:', wa.get('groupPolicy'))
-print('READ_RECEIPTS:', wa.get('sendReadReceipts'))
-print('REACTION:', wa.get('reactionLevel'))
-print('SELF_CHAT:', wa.get('selfChatMode'))
-print('ALLOW_FROM:', wa.get('allowFrom'))
-print('GROUP_COUNT:', len(groups))
+wa = cfg.get(\"channels\", {}).get(\"whatsapp\", {})
+groups = wa.get(\"groups\", {})
+print(\"ENABLED:\", wa.get(\"enabled\"))
+print(\"DM_POLICY:\", wa.get(\"dmPolicy\"))
+print(\"GROUP_POLICY:\", wa.get(\"groupPolicy\"))
+print(\"READ_RECEIPTS:\", wa.get(\"sendReadReceipts\"))
+print(\"REACTION:\", wa.get(\"reactionLevel\"))
+print(\"SELF_CHAT:\", wa.get(\"selfChatMode\"))
+print(\"HOOKS:\", wa.get(\"pluginHooks\"))
+print(\"ALLOW_FROM:\", wa.get(\"allowFrom\"))
+print(\"GROUP_COUNT:\", len(groups))
 for gid, gcfg in groups.items():
-    mention = gcfg.get('requireMention', True)
-    prompt = gcfg.get('systemPrompt', '')
-    print(f'GROUP:{gid}|mention={mention}|prompt_len={len(prompt)}')
-    print(f'PROMPT_FULL:{prompt}')
-"
+    mention = gcfg.get(\"requireMention\", True)
+    prompt = gcfg.get(\"systemPrompt\", \"\")
+    print(f\"GROUP:{gid}|mention={mention}|prompt_len={len(prompt)}\")
+    print(f\"PROMPT_FULL:{prompt}\")
+"'
 
-# 3. Groups seen in logs (today + yesterday)
-for day in $(date +%Y-%m-%d) $(date -d yesterday +%Y-%m-%d); do
-  grep "@g.us" /tmp/openclaw/openclaw-${day}.log 2>/dev/null | python3 -c "
+# 3. Groups seen today in logs
+ssh jarvis 'grep "@g.us" /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log 2>/dev/null | python3 -c "
 import sys, json
 groups = {}
 for line in sys.stdin:
     try:
         d = json.loads(line)
-        info = d.get('1', {})
-        frm = info.get('from', '')
-        body = info.get('body', '')
-        ts = info.get('timestamp', 0)
-        if '@g.us' in frm and body:
-            groups[frm] = {'body': body[:80], 'ts': ts}
+        info = d.get(\"1\", {})
+        frm = info.get(\"from\", \"\")
+        body = info.get(\"body\", \"\")
+        ts = info.get(\"timestamp\", 0)
+        if \"@g.us\" in frm and body:
+            groups[frm] = {\"body\": body[:80], \"ts\": ts}
     except:
         pass
-for gid, data in sorted(groups.items(), key=lambda x: x[1]['ts'], reverse=True):
-    print(gid + '  |  ' + data['body'])
-" 2>/dev/null
-done
+for gid, data in sorted(groups.items(), key=lambda x: x[1][\"ts\"], reverse=True):
+    print(gid + \"  |  \" + data[\"body\"])
+" 2>/dev/null'
 
 # 4. GBrain stored data
-gbrain list 2>/dev/null | grep -i whatsapp
+ssh jarvis 'gbrain list 2>/dev/null | grep -i whatsapp'
 
 # 5. Gateway health
-uptime; free -h | grep Mem
-systemctl --user status openclaw-gateway 2>&1 | grep -E "Active|Memory"
+ssh jarvis 'uptime; free -h | grep Mem'
 ```
 
 ## Subcommands
@@ -259,16 +241,15 @@ User says "agrega grupo X" or "/whatsapp add":
 4. Edit openclaw.json to add the group
 5. Restart gateway
 6. Verify with channels status
-7. Regenerate ~/whatsapp-status.md with the new group included
-8. Update gbrain guide
+7. Update gbrain guide: `gbrain put guias/whatsapp-openclaw-setup`
+8. Save version snapshot: `gbrain put guias/whatsapp-history/YYYY-MM-DD`
 
 ### `/whatsapp remove`
 1. Show current monitored groups
 2. Confirm which to remove
 3. Edit openclaw.json
 4. Restart gateway
-5. Regenerate ~/whatsapp-status.md
-6. Update gbrain guide
+5. Update gbrain guide
 
 ### `/whatsapp groups`
 Just show the groups table (monitored + detected), no full dashboard.
@@ -276,31 +257,17 @@ Just show the groups table (monitored + detected), no full dashboard.
 ### `/whatsapp guide`
 Pull and display the guide from gbrain:
 ```bash
-gbrain get guias/whatsapp-openclaw-setup
+ssh jarvis 'gbrain get guias/whatsapp-openclaw-setup'
 ```
 
 ### `/whatsapp dm add <number>`
 1. Change dmPolicy from disabled to allowlist (if not already)
 2. Add number to allowFrom
 3. Restart gateway
-4. Regenerate ~/whatsapp-status.md
-5. Update guide
+4. Update guide
 
 ### `/whatsapp dm remove <number>`
 Reverse of add.
-
-## Feature activation logic
-
-When a feature is toggled ON (⬜ → ✅) in the .md file, append to the group's systemPrompt:
-
-| Feature | What to append to systemPrompt |
-|---|---|
-| 📧 Alerta por correo | "7. CORREO: Si alguien menciona un tema critico o urgente, usa el plugin de correo para notificar a sergioduran@correo.com" |
-| 📱 Forward a Telegram | "7. TELEGRAM: Reenvia mensajes importantes (decisiones, tareas, urgencias) al chat de Telegram del usuario" |
-| 🔍 Filtro por personas | "7. PERSONAS PRIORITARIAS: Guarda TODO de las personas listadas en reglas custom. De los demas solo lo importante" |
-| 🚨 Alertas por keyword | "7. ALERTAS: Cuando se mencionen las palabras clave listadas en reglas custom, marca el mensaje como ALERTA" |
-| 📅 Extractor de fechas | "7. FECHAS: Detecta y lista todas las fechas, deadlines y eventos mencionados en una seccion ## Fechas detectadas" |
-| 💰 Detector de montos | "7. MONTOS: Detecta y registra todos los montos, presupuestos y cifras mencionados en una seccion ## Montos detectados" |
 
 ## Rules for systemPrompt per group
 
@@ -339,9 +306,8 @@ Eres un observador silencioso del grupo NOMBRE. REGLAS:
 Always:
 1. Restart: `systemctl --user restart openclaw-gateway`
 2. Verify: `openclaw channels status --channel whatsapp`
-3. Regenerate ~/whatsapp-status.md
-4. Update gbrain guide
-5. Save history snapshot if significant change
+3. Update guide in gbrain
+4. Save history snapshot
 
 ## Trigger phrases
 

@@ -8,7 +8,7 @@
     M O N I T O R    v2.1    ·    C O M M A N D    C E N T E R
 ```
 
-> Generado: 2026-05-05 02:50 UTC · Numero: +526624707325 · Hermosillo
+> Generado: 2026-05-05 05:43 UTC · Numero: +526624707325 · Hermosillo
 > Cambios: dimelo por chat y yo lo aplico
 
 ---
@@ -16,8 +16,8 @@
 ## ESTADO
 
 ```
-    CONEXION ............. CONNECTED         HEALTHY
-    GATEWAY .............. ACTIVE            409 MB RAM
+    CONEXION ............. CONNECTED         HEALTHY    (in: 5m ago)
+    GATEWAY .............. ACTIVE            863 MB RAM  (uptime: 30m)
     DMs .................. DESHABILITADOS    nadie puede escribir al bot
     VISTO AZUL ........... OFF               invisible, sin palomitas azules
     REACCIONES ........... OFF               no pone emojis
@@ -343,10 +343,10 @@ groups                          1 grupo               objeto con IDs
 ## SISTEMA
 
 ```
-    UPTIME ............... 10h 57m
-    RAM .................. 5.4 GB / 7.6 GB  (71%)
-    LOAD ................. 1.10 / 0.96 / 0.55
-    GATEWAY .............. active   PID 158293   409 MB
+    UPTIME ............... 13h 59m
+    RAM .................. 3.1 GB / 7.6 GB  (41%)
+    LOAD ................. 0.18 / 0.16 / 1.06
+    GATEWAY .............. active   PID 194095   863 MB
     VERSION .............. OpenClaw v2026.4.11
     WHATSAPP PLUGIN ...... @openclaw/whatsapp v2026.5.3
     NODE ................. v24.14.0

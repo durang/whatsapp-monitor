@@ -319,17 +319,51 @@ ALWAYS run: `openclaw plugins list | grep dm-block`
 If dm-block is NOT listed as "enabled", DMs WILL be responded to.
 This is FAIL-OPEN — if the plugin doesn't load, messages are sent normally.
 
-### Adding/removing DM numbers
-To add a number to monitor (read-only, never responds):
-1. Add the number to channels.whatsapp.allowFrom in openclaw.json
-2. Ensure dmPolicy is "allowlist"
-3. Restart gateway
-4. Verify plugin is loaded: `openclaw plugins list | grep dm-block`
-5. The plugin blocks ALL DM outbound — no per-number config needed
+### How DMs work (IMPORTANT — all DMs are identical)
+Every number in allowFrom gets the SAME treatment:
+- Bot READS their messages (inbound allowed)
+- Bot NEVER RESPONDS (dm-block-claw cancels ALL outbound)
+- There is NO difference between numbers — the plugin blocks everything
+- No number has special privileges — all are read-only equally
 
-To remove a number:
-1. Remove from allowFrom
-2. Restart gateway
+### DM Directory (persistent — never overwrite, only add/remove)
+When the user says "add a number" or "remove a number", ALWAYS:
+1. Ask for the person's NAME
+2. Ask for the full phone number with country code
+3. Register in the directory below
+4. Add/remove from allowFrom in openclaw.json
+5. Restart gateway
+6. Verify plugin loaded: `openclaw plugins list | grep dm-block`
+7. Update this directory in the skill AND in the dashboard
+
+Current DM Directory:
+- Sergio (owner) ......... +526624707325 ...436 — authorized owner
+- Cynthia Cruz ........... +13058495648 ..648 — read-only, verified 2026-05-05
+- Jason Prescott ......... +17608285436 ..436 — read-only, added 2026-05-05
+
+Format: Name ........... +full_number ..last3 — status, date added
+
+RULES:
+- This directory is the source of truth for DM numbers
+- NEVER overwrite — only add new entries or mark removed entries
+- When removing: change status to "REMOVED YYYY-MM-DD" (keep the entry for history)
+- Each entry must have: name, full number, last 3 digits, status, date
+- The dashboard (~/whatsapp-status.md) must reflect this directory
+
+### Adding a number (step by step)
+1. Ask user: "What name?" and "What number with country code?"
+2. Add to allowFrom in openclaw.json
+3. Add to this directory in the skill
+4. Restart gateway
+5. Verify: openclaw plugins list | grep dm-block (MUST show enabled)
+6. Verify: openclaw channels status --channel whatsapp (MUST show the number)
+7. Update dashboard and push to git
+
+### Removing a number
+1. Remove from allowFrom in openclaw.json
+2. Mark as REMOVED in this directory (do NOT delete the entry)
+3. Restart gateway
+4. Update dashboard and push to git
 
 WARNING: If dmPolicy is "allowlist" and dm-block-claw plugin is NOT loaded,
 the bot WILL respond to every DM. Always verify plugin after restart.

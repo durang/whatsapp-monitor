@@ -351,13 +351,37 @@ Eres un observador silencioso del grupo NOMBRE. REGLAS:
 4. Slug: whatsapp/SLUG/YYYY-MM-DD
 ```
 
+## HEALTH CHECK (run after every change and with every /whatsapp)
+
+After ANY restart or config change, run ALL of these checks:
+
+1. WhatsApp connected: `openclaw channels status --channel whatsapp` must show "connected, health:healthy"
+2. Telegram connected: `openclaw channels status --channel telegram` must show "connected"
+3. Plugin loaded: `openclaw plugins list | grep dm-block` must show "enabled"
+4. Model errors: `grep "lane task error" today's log | tail -5` — should be 0 after restart
+5. Outbound blocked: `grep "dm-block.*Cancelled" today's log` — confirms plugin is working
+6. GBrain saving: `gbrain list | grep whatsapp/dm` — confirms data is being stored
+
+If any check fails, investigate and fix BEFORE doing anything else.
+
+IMPORTANT CODEX RUNTIME RULE:
+The main agent uses Codex runtime (agentRuntime.id: "codex").
+Codex ONLY supports OpenAI models (openai/gpt-5.5, openai/gpt-5.5-pro).
+Do NOT add non-OpenAI fallbacks (deepseek, grok, minimax) — they will FAIL with:
+"auth profile must belong to provider openai-codex"
+This was the cause of repeated failures on 2026-05-05.
+
 ## After ANY change
 
-Always:
-1. Restart: `systemctl --user restart openclaw-gateway`
-2. Verify: `openclaw channels status --channel whatsapp`
-3. Update guide in gbrain
-4. Save history snapshot
+MANDATORY — do ALL of these automatically:
+1. Restart gateway
+2. Wait 20 seconds for WhatsApp to reconnect
+3. Run the HEALTH CHECK above (all 6 points)
+4. Regenerate ~/whatsapp-status.md
+5. Update GBrain
+6. Git push to github.com/durang/whatsapp-monitor
+
+Never ask if user wants to update. Just do it.
 
 ## Trigger phrases
 

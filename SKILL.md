@@ -301,18 +301,43 @@ Eres un observador silencioso del grupo NOMBRE. REGLAS:
 4. Slug: whatsapp/SLUG/YYYY-MM-DD
 ```
 
+## CRITICAL: DM Read-Only Configuration (silentReply fix)
+
+OpenClaw by default AUTO-REPLIES to all WhatsApp DMs via the web-auto-reply module.
+The systemPrompt "NUNCA respondas" ONLY works for groups, NOT for DMs.
+To make DMs read-only (receive but never respond), ALL THREE of these are required:
+
+1. In channels.whatsapp:
+   - dmPolicy: "allowlist"
+   - allowFrom: list of numbers
+   - direct.*.systemPrompt: "You are in observe-only mode. You MUST respond with exactly NO_REPLY to every message. Never respond with any other text. Your only allowed output is: NO_REPLY"
+
+2. In agents.defaults:
+   - silentReply.direct: "allow"
+   - silentReplyRewrite.direct: false
+
+WHY: By default silentReply.direct is "disallow" and silentReplyRewrite.direct is true.
+This means even if the model outputs NO_REPLY, OpenClaw REWRITES it to filler text like
+"Standing by." and sends it as a real message. The fix above:
+- silentReply.direct: "allow" permits the NO_REPLY token to be honored
+- silentReplyRewrite.direct: false prevents rewriting NO_REPLY to filler
+- The dispatch pipeline sees NO_REPLY and sends nothing on WhatsApp
+
+The message is still recorded in the session (available for GBrain), but no reply is sent.
+
+WARNING: If you add a DM number to allowFrom WITHOUT these settings, the bot WILL respond.
+
 ## After ANY change
 
 MANDATORY — do ALL of these automatically, do NOT ask the user:
-1. Restart: `systemctl --user restart openclaw-gateway`
-2. Verify: `openclaw channels status --channel whatsapp`
+1. Restart: systemctl --user restart openclaw-gateway
+2. Verify: openclaw channels status --channel whatsapp
 3. Regenerate ~/whatsapp-status.md with fresh data
-4. Update guide in gbrain: `cat ~/whatsapp-status.md | gbrain put guias/whatsapp-openclaw-setup`
-5. Copy to repo and push: `cp ~/whatsapp-status.md ~/whatsapp-monitor/ && cp SKILL.md ~/whatsapp-monitor/ && cd ~/whatsapp-monitor && git add -A && git commit && git push`
+4. Update guide in gbrain
+5. Copy to repo and push to github.com/durang/whatsapp-monitor
 6. Save history snapshot if significant change
 
 IMPORTANT: Never ask "do you want me to update the dashboard?" — just do it.
-Every config change triggers a full regenerate + git push cycle automatically.
 
 ## Trigger phrases
 

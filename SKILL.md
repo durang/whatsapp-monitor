@@ -261,13 +261,63 @@ ssh jarvis 'gbrain get guias/whatsapp-openclaw-setup'
 ```
 
 ### `/whatsapp dm add <number>`
-1. Change dmPolicy from disabled to allowlist (if not already)
-2. Add number to allowFrom
-3. Restart gateway
-4. Update guide
+1. Ask user for NAME and FULL NUMBER with country code
+2. Change dmPolicy to allowlist (if not already)
+3. Add number to allowFrom in openclaw.json
+4. Add contact to DM Directory below (never overwrite existing entries)
+5. If contact needs specific rules, add to direct.*.systemPrompt contact section
+6. Restart gateway
+7. Verify plugin: openclaw plugins list | grep dm-block (MUST be enabled)
+8. Update dashboard, GBrain, git push
 
 ### `/whatsapp dm remove <number>`
-Reverse of add.
+1. Remove from allowFrom in openclaw.json
+2. Mark as REMOVED in DM Directory (do NOT delete — keep for history)
+3. Restart gateway
+4. Update dashboard, GBrain, git push
+
+## DM Directory (persistent — source of truth)
+
+This directory is NEVER overwritten. Only add or mark REMOVED.
+Format: Name | Number | Last3 | Responds | Rules | Status | Date
+
+Current directory:
+- Sergio (owner) | +526624707325 | 325 | --- | owner | OWNER | always
+- Cynthia Cruz | +13058495648 | 648 | NO | marketing, JPC | READ-ONLY verified | 2026-05-05
+- Jason Prescott | +17608285436 | 436 | NO | professional only | READ-ONLY | 2026-05-05
+
+Responds column: NO = dm-block-claw cancels outbound. YES = plugin allows response.
+Rules column: short description of what to focus on when saving to GBrain.
+
+## DM SystemPrompt (one for ALL contacts)
+
+There is ONE systemPrompt for all DMs: direct.*.systemPrompt
+It lives in channels.whatsapp.direct.*.systemPrompt in openclaw.json.
+
+Groups have individual systemPrompts per group ID. DMs do NOT.
+To add per-contact rules, add them to the CONTACT RULES section
+at the end of the DM systemPrompt. Keep it simple — max 1-2 lines per contact.
+
+Current DM systemPrompt structure:
+1. Core rules (same for everyone): save to GBrain, format, slug by contact name
+2. Contact rules section (optional): per-contact filtering instructions
+3. GBrain saves canonically: chunks + embeddings + semantic search
+
+How GBrain stores DMs:
+- Each contact gets their own slug: whatsapp/dm/NOMBRE/YYYY-MM-DD
+- Format: [HH:MM] Nombre: mensaje
+- Daily summary at end of page
+- Searchable via: gbrain search "keyword"
+- Same 3-level structure as groups: summary on top, important middle, raw bottom
+
+How to verify GBrain is saving:
+- gbrain list | grep whatsapp/dm
+- gbrain search "text from a DM"
+- If nothing appears, check agent logs for errors (Codex timeout, model failure)
+
+IMPORTANT: GBrain saving depends on the AGENT processing the message successfully.
+If Codex fails (OAuth, timeout, model error), the message is received but NOT saved.
+Always check logs after adding a contact: grep "lane task error.*whatsapp" in today's log.
 
 ## Rules for systemPrompt per group
 
@@ -301,90 +351,13 @@ Eres un observador silencioso del grupo NOMBRE. REGLAS:
 4. Slug: whatsapp/SLUG/YYYY-MM-DD
 ```
 
-## CRITICAL: DM Read-Only via dm-block-claw Plugin
-
-OpenClaw's Codex runtime AUTO-REPLIES to every WhatsApp DM. The silentReply
-config does NOT work with Codex. The ONLY reliable solution is the dm-block-claw
-plugin at ~/dm-block-claw/ which hooks into message_sending and returns
-{ cancel: true } for all non-group outbound messages.
-
-### How it works
-- Plugin hooks into the dispatch pipeline BEFORE sendMessageWhatsApp
-- If destination is @g.us (group) or @newsletter: message passes through
-- If destination is @s.whatsapp.net (DM) or anything else: message CANCELLED
-- This is deterministic — no LLM involved, cannot fail unless plugin doesn't load
-
-### Verification after ANY restart
-ALWAYS run: `openclaw plugins list | grep dm-block`
-If dm-block is NOT listed as "enabled", DMs WILL be responded to.
-This is FAIL-OPEN — if the plugin doesn't load, messages are sent normally.
-
-### How DMs work (IMPORTANT — all DMs are identical)
-Every number in allowFrom gets the SAME treatment:
-- Bot READS their messages (inbound allowed)
-- Bot NEVER RESPONDS (dm-block-claw cancels ALL outbound)
-- There is NO difference between numbers — the plugin blocks everything
-- No number has special privileges — all are read-only equally
-
-### DM Directory (persistent — never overwrite, only add/remove)
-When the user says "add a number" or "remove a number", ALWAYS:
-1. Ask for the person's NAME
-2. Ask for the full phone number with country code
-3. Register in the directory below
-4. Add/remove from allowFrom in openclaw.json
-5. Restart gateway
-6. Verify plugin loaded: `openclaw plugins list | grep dm-block`
-7. Update this directory in the skill AND in the dashboard
-
-Current DM Directory:
-- Sergio (owner) ......... +526624707325 ...436 — authorized owner
-- Cynthia Cruz ........... +13058495648 ..648 — read-only, verified 2026-05-05
-- Jason Prescott ......... +17608285436 ..436 — read-only, added 2026-05-05
-
-Format: Name ........... +full_number ..last3 — status, date added
-
-RULES:
-- This directory is the source of truth for DM numbers
-- NEVER overwrite — only add new entries or mark removed entries
-- When removing: change status to "REMOVED YYYY-MM-DD" (keep the entry for history)
-- Each entry must have: name, full number, last 3 digits, status, date
-- The dashboard (~/whatsapp-status.md) must reflect this directory
-
-### Adding a number (step by step)
-1. Ask user: "What name?" and "What number with country code?"
-2. Add to allowFrom in openclaw.json
-3. Add to this directory in the skill
-4. Restart gateway
-5. Verify: openclaw plugins list | grep dm-block (MUST show enabled)
-6. Verify: openclaw channels status --channel whatsapp (MUST show the number)
-7. Update dashboard and push to git
-
-### Removing a number
-1. Remove from allowFrom in openclaw.json
-2. Mark as REMOVED in this directory (do NOT delete the entry)
-3. Restart gateway
-4. Update dashboard and push to git
-
-WARNING: If dmPolicy is "allowlist" and dm-block-claw plugin is NOT loaded,
-the bot WILL respond to every DM. Always verify plugin after restart.
-
-### Plugin files
-- ~/dm-block-claw/index.js — the hook (10 lines of logic)
-- ~/dm-block-claw/openclaw.plugin.json — plugin manifest
-- ~/dm-block-claw/package.json — plugin metadata
-
 ## After ANY change
 
-MANDATORY — do ALL of these automatically, do NOT ask the user:
+Always:
 1. Restart: `systemctl --user restart openclaw-gateway`
-2. Verify WhatsApp: `openclaw channels status --channel whatsapp`
-3. Verify plugin: `openclaw plugins list | grep dm-block` (MUST show "enabled")
-4. Regenerate ~/whatsapp-status.md with fresh data
-5. Update GBrain guide
-6. Copy to repo and push to github.com/durang/whatsapp-monitor
-7. Save history snapshot if significant change
-
-IMPORTANT: Never ask "do you want me to update?" — just do it.
+2. Verify: `openclaw channels status --channel whatsapp`
+3. Update guide in gbrain
+4. Save history snapshot
 
 ## Trigger phrases
 

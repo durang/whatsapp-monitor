@@ -17,35 +17,20 @@ You are managing TWO WhatsApp agents on the same phone number:
 
 Never trust cached info. Every invocation MUST run verification commands and show REAL state.
 
-## OUTPUT FORMAT — Two parts, always both
+## OUTPUT FORMAT — Always generate ~/whatsapp-status.md AND show a text summary
 
-### Part 1: Text response (directly to user)
+The .md file IS the dashboard. Use the EXACT visual format from `~/OPENCLAW_DASHBOARD.md` as reference:
+- `diff` code blocks for colored headers (lines starting with `-` for red, `+` for green)
+- Box-drawing: `╔═══╗ ║ ╠═══╣ ╚═══╝` for sections
+- Progress bars: `████░░░░` with percentages
+- Icons: ✅ ❌ ⚠️ 🔒 👤 📖 ⚕ 🧠 🔐 📱 💬
 
-```
-WhatsApp Dual-Agent Dashboard
+### Text response to user (short summary)
+Show a brief conversational summary, then say "Reporte completo: ~/whatsapp-status.md"
 
-📖 OpenClaw (LECTOR)
-  Conexión: ✅ connected | Número: +526624707325
-  Grupos monitoreados: 2
-    - JPC         read-only ✅  slug: whatsapp/jpc/
-    - JPC-Dev     read-only ✅  slug: whatsapp/jpc-dev/
-  DMs: allowlist (3 números) — solo lectura
-  Grupos detectados sin monitorear: 25
+### ~/whatsapp-status.md (the REAL dashboard — VISUAL, box-drawing, diff blocks)
 
-⚕ Hermes (EJECUTOR)
-  Conexión: ✅ connected | Bridge: port 3000
-  Contactos autorizados: 1
-    - 👤 Sergio (+526624707325)  admin  ✅
-    - 👤 Jason (+13058495648)    consultoría  ✅
-  Grupos: disabled
-  Seguridad: allowlist + perfiles por contacto
-
-⚠️ Alertas: (si las hay)
-
-Reporte completo: ~/whatsapp-status.md
-```
-
-### Part 2: Detailed .md report (saved to ~/whatsapp-status.md)
+Follow this EXACT visual template:
 
 ## Data collection commands
 
@@ -95,115 +80,176 @@ echo "=== DETECTED GROUPS ==="; find ~/.openclaw/credentials/whatsapp/default/ -
 echo "=== SYSTEM ==="; uptime; free -h | grep Mem
 ```
 
-## Report template (~/whatsapp-status.md)
+## Report template (~/whatsapp-status.md) — VISUAL FORMAT (canonical)
 
-```markdown
-# WhatsApp Dual-Agent Dashboard
-> Generado: YYYY-MM-DD HH:MM UTC
-> Skill version: 3.0
+Use EXACTLY this format. Box-drawing, diff blocks, progress bars. Reference: ~/OPENCLAW_DASHBOARD.md
 
----
+The .md file MUST look like this when rendered:
 
-## 📖 OpenClaw — LECTOR
-
-| Campo | Estado |
-|---|---|
-| Conexión | connected/disconnected |
-| Número | +526624707325 |
-| Modo | Read-only (observador silencioso) |
-| Gateway | active/inactive |
-
-### Configuración
-| Setting | Valor | Significado |
-|---|---|---|
-| dmPolicy | allowlist | Solo números autorizados |
-| groupPolicy | allowlist | Solo grupos configurados |
-| sendReadReceipts | false | Sin visto azul |
-| reactionLevel | off | Sin reacciones |
-
-### Grupos Monitoreados
-| Grupo | ID | Modo | Injection Protected | GBrain Slug |
-|---|---|---|---|---|
-| JPC | xxx@g.us | read-only | ✅ | whatsapp/jpc/ |
-
-### DMs Permitidos (lectura)
-| Número | Estado |
-|---|---|
-| +526624707325 | ✅ |
-
----
-
-## ⚕ Hermes — EJECUTOR
-
-| Campo | Estado |
-|---|---|
-| Conexión | connected/disconnected |
-| Bridge | port 3000, uptime Xs |
-| Gateway | active/inactive |
-| Secrets Redaction | true/false |
-| Session Perms | 700/600 |
-
-### Configuración
-| Setting | Valor | Significado |
-|---|---|---|
-| dm_policy | allowlist | Solo contactos autorizados |
-| allow_from | [...] | Lista de números |
-| unauthorized_dm_behavior | ignore | Silencio total |
-| group_policy | disabled/allowlist | Grupos off o selectivos |
-| require_mention | true/false | En grupos, requiere mención |
-
-### Contactos Autorizados
-| # | Nombre | Número | Rol | Perfil | Permisos |
-|---|---|---|---|---|---|
-| 1 | Sergio | +526624707325 | Admin | ✅ | Todo |
-| 2 | Jason | +13058495648 | Consultoría | ✅ | Read-only GBrain |
-
-### Seguridad por Contacto
-| Contacto | Archivo | Injection Protection | Approval Required | Prohibited Tools |
-|---|---|---|---|---|
-| Sergio | ✅ +526624707325.md | ✅ | No (admin) | Ninguno |
-| Jason | ✅ +13058495648.md | ✅ | Sí (modificaciones) | put_page, terminal |
-
----
-
-## 🔐 Seguridad Global
-
-| Check | OpenClaw | Hermes |
-|---|---|---|
-| Config perms (600) | ✅/❌ | ✅/❌ |
-| Session perms (700/600) | ✅/❌ | ✅/❌ |
-| Injection protection | ✅/❌ per group | ✅/❌ per contact |
-| Secrets redaction | N/A | ✅/❌ |
-| Port exposure | N/A | 127.0.0.1 only ✅/❌ |
-
----
-
-## 📊 Cuándo usar cada uno
-
-| Escenario | Agente | Ejemplo |
-|---|---|---|
-| Monitorear grupo de trabajo | OpenClaw | Lee JPC, guarda en GBrain |
-| Cliente pide métricas de ads | Hermes | Karina consulta Meta Ads |
-| Guardar decisiones de grupo | OpenClaw | Registra acuerdos en GBrain |
-| Traducir PDF en grupo personal | Hermes | Tú pides traducción en JCD |
-| Ejecutar campaña aprobada | Hermes | Sergio autoriza, Hermes ejecuta |
-
----
-
-## Comandos disponibles
-
-| Comando | Qué hace |
-|---|---|
-| /whatsapp | Este dashboard |
-| /whatsapp add <grupo> | Agregar grupo a OpenClaw |
-| /whatsapp remove <grupo> | Quitar grupo de OpenClaw |
-| /whatsapp groups | Tabla de grupos |
-| /whatsapp hermes allow <num> | Autorizar contacto en Hermes |
-| /whatsapp hermes block <num> | Bloquear contacto en Hermes |
-| /whatsapp hermes list | Ver contactos autorizados |
-| /whatsapp hermes profile <num> | Ver/editar perfil de contacto |
-| /whatsapp security | Auditoría de seguridad |
+````markdown
+```diff
+- ╔═══════════════════════════════════════════════════════════════════════╗
+- ║  __        ___         _       _                                    ║
+- ║  \ \      / / |__   __ _| |_ ___/ \   _ __  _ __                    ║
+- ║   \ \ /\ / /| '_ \ / _` | __/ __| |  | '_ \| '_ \                  ║
+- ║    \ V  V / | | | | (_| | |_\__ \ |__| |_) | |_) |                  ║
+- ║     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/                   ║
+- ║                                        |_|   |_|                     ║
+- ║      DUAL-AGENT DASHBOARD v3.0 · YYYY-MM-DD HH:MM UTC              ║
+- ║      Number: +526624707325 · Host: ip-XXX.ec2.internal              ║
+- ╚═══════════════════════════════════════════════════════════════════════╝
 ```
+
+---
+
+## 1. LIVE STATUS
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  AGENT              ROLE        STATE        UPTIME         ║
+╠══════════════════════════════════════════════════════════════╣
+║  📖 OpenClaw        LECTOR      ✅ active     Xh             ║
+║  ⚕ Hermes          EJECUTOR    ✅ active     Xh             ║
+║  🌉 WA Bridge       TRANSPORT   ✅ connected  Xh             ║
+╠══════════════════════════════════════════════════════════════╣
+║  RAM    ████████░░░░░░░░░░░░  X/Y MB (Z%)                   ║
+║  UPTIME X days, Xh Xm                                       ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 2. 📖 OpenClaw — LECTOR
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CONFIGURACIÓN                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  dmPolicy          allowlist     Solo números autorizados    ║
+║  groupPolicy       allowlist     Solo grupos configurados    ║
+║  sendReadReceipts  false         Sin visto azul              ║
+║  reactionLevel     off           Sin reacciones              ║
+║  selfChatMode      false         No self-chat                ║
+╠══════════════════════════════════════════════════════════════╣
+║  GRUPOS MONITOREADOS (N)                                     ║
+╠══════════════════════════════════════════════════════════════╣
+║  ✅ NOMBRE     xxx@g.us     read-only  🔒 injection-protected║
+║  ✅ NOMBRE     xxx@g.us     read-only  🔒 injection-protected║
+╠══════════════════════════════════════════════════════════════╣
+║  DMs PERMITIDOS (lectura)                                    ║
+╠══════════════════════════════════════════════════════════════╣
+║  ✅ +526624707325   Sergio                                   ║
+║  ✅ +13058495648    Jason                                    ║
+║  ✅ +17608285436                                             ║
+╠══════════════════════════════════════════════════════════════╣
+║  Grupos detectados sin monitorear: N                         ║
+║  Usa /whatsapp add para agregar                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 3. ⚕ Hermes — EJECUTOR
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CONFIGURACIÓN                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  dm_policy          allowlist     Solo contactos autorizados ║
+║  allow_from         [N números]   Lista de autorizados       ║
+║  unauthorized_dm    ignore        Silencio total             ║
+║  group_policy       disabled      No toca grupos             ║
+║  require_mention    false         N/A                        ║
+║  secrets_redaction  true          Tokens ocultos en logs     ║
+╠══════════════════════════════════════════════════════════════╣
+║  CONTACTOS AUTORIZADOS                                       ║
+╠══════════════════════════════════════════════════════════════╣
+║  👤 Nombre    +XXXXXXXXXXX   Rol          ✅ active / ❌ off ║
+║  👤 Nombre    +XXXXXXXXXXX   Rol          ✅ active / ❌ off ║
+╠══════════════════════════════════════════════════════════════╣
+║  SEGURIDAD POR CONTACTO                                      ║
+╠══════════════════════════════════════════════════════════════╣
+║  👤 Nombre    🔒 injection ✅  ⚠️ approval: sí/no  ❌ tools: N║
+║  👤 Nombre    🔒 injection ✅  ⚠️ approval: sí/no  ❌ tools: N║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 4. 🔐 SEGURIDAD
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CHECK                        OPENCLAW        HERMES        ║
+╠══════════════════════════════════════════════════════════════╣
+║  Config perms (600)           ✅              ✅             ║
+║  Session perms (700/600)      ✅              ✅             ║
+║  Injection protection         ✅ N/N          ✅ N/N         ║
+║  Secrets redaction            N/A             ✅             ║
+║  Bridge port (localhost)      N/A             ✅             ║
+║  Tailscale exposure           N/A             ✅ NOT exposed ║
+║  DM blocking                  ✅ allowlist    ✅ allowlist   ║
+╠══════════════════════════════════════════════════════════════╣
+║  Score: ██████████████████░░  95%                           ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 5. 📊 CUÁNDO USAR CADA UNO
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  ESCENARIO                      AGENTE          EJEMPLO     ║
+╠══════════════════════════════════════════════════════════════╣
+║  Monitorear grupo de trabajo    📖 OpenClaw     JPC→GBrain  ║
+║  Cliente pide métricas de ads   ⚕ Hermes       Meta Ads MCP║
+║  Guardar decisiones de grupo    📖 OpenClaw     acuerdos    ║
+║  Traducir PDF en grupo          ⚕ Hermes       Hermes trad ║
+║  Ejecutar campaña aprobada      ⚕ Hermes       con approval║
+║  Registrar conversación         📖 OpenClaw     silencioso  ║
+║  Responder a cliente por WA     ⚕ Hermes       con perfil  ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 6. ALERTAS
+
+```diff
+- 🔴 (critical alerts here — red diff block)
+```
+
+```
+! ⚠️ (warnings here)
+```
+
+```diff
++ ✅ (positive notes here — green diff block)
+```
+
+---
+
+## 7. COMANDOS
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  COMANDO                          QUÉ HACE                 ║
+╠══════════════════════════════════════════════════════════════╣
+║  /whatsapp                        Este dashboard            ║
+║  /whatsapp add <grupo>            Agregar grupo a OpenClaw  ║
+║  /whatsapp remove <grupo>         Quitar grupo de OpenClaw  ║
+║  /whatsapp groups                 Tabla de grupos           ║
+║  /whatsapp hermes allow <num>     Autorizar contacto        ║
+║  /whatsapp hermes block <num>     Bloquear contacto         ║
+║  /whatsapp hermes list            Ver contactos             ║
+║  /whatsapp hermes profile <num>   Ver/editar perfil         ║
+║  /whatsapp security               Auditoría de seguridad    ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+*Scanned YYYY-MM-DD HH:MM UTC · /whatsapp v3.0 · Dual-Agent Dashboard*
+````
 
 ## Subcommands
 

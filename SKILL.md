@@ -344,16 +344,19 @@ cd baileys-build && npm install @types/retry && npm install && npm run build
 cp -r /tmp/baileys-build /path/to/scripts/whatsapp-bridge/node_modules/@whiskeysockets/baileys
 ```
 
-### Problem 2: Bot mode ignores fromMe (self-chat impossible)
-Original `bridge.js` line ~254: `if (WHATSAPP_MODE === 'bot') { continue; }` skips ALL fromMe.
-**Fix:** Patched to only skip echo-backs (messages sent BY the bridge), not owner messages:
+### Problem 2: Bot mode ignores fromMe (self-chat AND groups impossible)
+Original `bridge.js`: `if (WHATSAPP_MODE === 'bot') { continue; }` skips ALL fromMe.
+First fix blocked groups too: `if (isGroup || ...) continue;`
+**Final fix:** Only skip status broadcasts and known echo-backs. Owner messages pass in DMs AND groups:
 ```javascript
 if (msg.key.fromMe) {
-  if (isGroup || chatId.includes('status')) continue;
-  if (recentlySentIds.has(msg.key.id)) continue; // skip bot echo-backs
-  // owner messages → allow through
+  if (chatId.includes('status')) continue;          // skip status broadcasts
+  if (recentlySentIds.has(msg.key.id)) continue;   // skip bot echo-backs
+  // owner messages (DM or group) → allow through
 }
 ```
+This allows: you write "hermes do X" in a group → Hermes processes it.
+Echo-backs (Hermes replying) are caught by recentlySentIds and skipped.
 
 ### Problem 3: LID format mismatch
 WhatsApp now uses LID (Linked Identity Device) format internally: `12532764950535@lid`

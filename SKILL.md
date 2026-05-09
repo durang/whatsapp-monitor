@@ -164,19 +164,48 @@ Show ALL groups: OpenClaw monitored + Hermes active + detected. With NAMES from 
 
 ### /whatsapp hermes allow NUMBER  (or "agrega a [nombre] +[número]")
 
-FIRST ask: "¿Cómo lo agrego?"
-- 📖 **MONITOREO** (OpenClaw) — solo leer sus DMs silenciosamente, guardar en GBrain. El contacto NO sabe que existe. Agregar número a allowFrom en openclaw.json.
-- ⚕ **EJECUCIÓN** (Hermes) — el contacto puede hablarle a Hermes y recibir respuesta. Con restricciones máximas por defecto. Crear perfil .md + página GBrain.
-- 📖 + ⚕ **AMBOS** — OpenClaw lee silenciosamente + Hermes responde.
+STEP 1 — Ask: "¿Cómo lo agrego?"
 
-THEN if Hermes (ejecución):
-1. Ask: name, role, permissions, prohibited tools, GBrain scope
-2. Auto-detect LID from session files or bridge log
-3. Create profile at ~/.hermes/whatsapp/contacts/+NUMBER.md (MUST include security block, GBrain scope, cross-platform context)
-4. Create GBrain live page: mcp_gbrain_put_page slug=contacts/NAME with type=person, tags=[contact], estado actual, canales, historial vacío. This page is updated automatically by Hermes after each interaction.
-5. Add 4 formats to allow_from (phone, JID, LID, LID JID)
-6. Restart tmux gateway
-7. Verify bridge health + verify GBrain page exists
+```
+╔══════════════════════════════════════════════════════════════╗
+║  📖 MONITOREO (OpenClaw)                                    ║
+║  Solo leer sus DMs silenciosamente → guardar en GBrain.      ║
+║  El contacto NO sabe que existe. Completamente invisible.    ║
+║                                                              ║
+║  ⚕ EJECUCIÓN (Hermes)                                      ║
+║  El contacto puede hablarle a Hermes y recibir respuesta.    ║
+║  Restricciones MÁXIMAS por defecto. Hermes responde normal   ║
+║  pero con las reglas del contacto aplicadas.                 ║
+║                                                              ║
+║  📖 + ⚕ AMBOS                                              ║
+║  OpenClaw lee silenciosamente + Hermes responde.             ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+STEP 2 — If MONITOREO (OpenClaw):
+  a. Add number to allowFrom in ~/.openclaw/openclaw.json
+  b. Restart: systemctl --user restart openclaw-gateway
+  c. Done — contacto monitoreado en silencio
+
+STEP 3 — If EJECUCIÓN (Hermes):
+  a. Ask: name and role
+  b. Auto-detect LID from session files or bridge log
+  c. Create profile from template at ~/.hermes/whatsapp/contacts/+NUMBER.md
+     Template has MAXIMUM RESTRICTION by default:
+     - 11 NUNCA rules, all MCP tools PROHIBITED, GBrain scope NONE
+     - Hermes responds naturally but with restrictions applied
+     - Contacto can only have basic conversation until Sergio opens permissions
+  d. SHOW the profile to Sergio: "Este es el perfil. ¿Lo apruebas o quieres modificar algo?"
+  e. Wait for Sergio's approval before proceeding
+  f. Create GBrain live page: mcp_gbrain_put_page slug=contacts/NAME
+     with type=person, tags=[contact], estado actual, historial vacío
+  g. Add 4 formats to allow_from (phone, JID, LID, LID JID)
+  h. Restart tmux gateway (kill hermes-gw + start fresh)
+  i. Verify bridge health + verify GBrain page exists
+  j. Confirm: "Contacto activo. Hermes responderá con restricciones máximas."
+
+STEP 4 — If AMBOS:
+  Do MONITOREO steps + EJECUCIÓN steps
 
 ### /whatsapp hermes block NUMBER
 Remove from allow_from. Keep .md. Restart.

@@ -162,7 +162,14 @@ Remove group from OpenClaw.
 ### /whatsapp groups
 Show ALL groups: OpenClaw monitored + Hermes active + detected. With NAMES from bridge API.
 
-### /whatsapp hermes allow NUMBER
+### /whatsapp hermes allow NUMBER  (or "agrega a [nombre] +[número]")
+
+FIRST ask: "¿Cómo lo agrego?"
+- 📖 **MONITOREO** (OpenClaw) — solo leer sus DMs silenciosamente, guardar en GBrain. El contacto NO sabe que existe. Agregar número a allowFrom en openclaw.json.
+- ⚕ **EJECUCIÓN** (Hermes) — el contacto puede hablarle a Hermes y recibir respuesta. Con restricciones máximas por defecto. Crear perfil .md + página GBrain.
+- 📖 + ⚕ **AMBOS** — OpenClaw lee silenciosamente + Hermes responde.
+
+THEN if Hermes (ejecución):
 1. Ask: name, role, permissions, prohibited tools, GBrain scope
 2. Auto-detect LID from session files or bridge log
 3. Create profile at ~/.hermes/whatsapp/contacts/+NUMBER.md (MUST include security block, GBrain scope, cross-platform context)

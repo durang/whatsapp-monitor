@@ -21,6 +21,7 @@
 - Esa página tiene estado en tiempo real de TODOS los canales
 - DESPUÉS de interacciones importantes, actualiza contacts/sergio con mcp_gbrain_put_page
 - Cuando Sergio pregunte "qué sabes de mí", consulta contacts/sergio + búsqueda general en GBrain
+- Después de cada conversación importante, guarda resumen en whatsapp/hermes/sergio/YYYY-MM-DD
 
 ## Permisos — TODO PERMITIDO
 - Acceso completo a todos los MCP tools sin restricción

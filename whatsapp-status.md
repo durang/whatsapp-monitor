@@ -7,7 +7,7 @@
 - ║     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/                   ║
 - ║                                        |_|   |_|                     ║
 - ║      DUAL-AGENT DASHBOARD v4.0 · 2026-05-09 07:51 UTC              ║
-- ║      Number: +526624707325                                           ║
+- ║      Number: +5215551234567                                           ║
 - ╚═══════════════════════════════════════════════════════════════════════╝
 ```
 
@@ -45,16 +45,16 @@
 ╠══════════════════════════════════════════════════════════════╣
 ║  GRUPOS MONITOREADOS (2)                                     ║
 ╠══════════════════════════════════════════════════════════════╣
-║  ✅ JPC - Full Deck    120363425126131671@g.us               ║
+║  ✅ Work Group A    EXAMPLE_GROUP_ID_1@g.us               ║
 ║     read-only · mention: off · 🔒 injection ✅ · 2652 chars ║
-║  ✅ JPC - Dev - Duran  120363406840968099@g.us               ║
+║  ✅ Work Group B  EXAMPLE_GROUP_ID_2@g.us               ║
 ║     read-only · mention: off · 🔒 injection ✅ · 2696 chars ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  DMs PERMITIDOS (lectura)                                    ║
 ╠══════════════════════════════════════════════════════════════╣
-║  ✅ +13058495648    Jason                                    ║
-║  ✅ +17608285436    (contacto)                               ║
-║  ❌ Sergio removido — Hermes maneja sus DMs ahora            ║
+║  ✅ +13055559876    Alex                                    ║
+║  ✅ +17605558765    (contacto)                               ║
+║  ❌ Owner removido — Hermes maneja sus DMs ahora            ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Grupos detectados sin monitorear: 27                        ║
 ║  Usa /whatsapp add para agregar                              ║
@@ -70,7 +70,7 @@
 ║  CONFIGURACIÓN                                              ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  dm_policy         allowlist     Solo contactos autorizados  ║
-║  allow_from        [4 entries]   Sergio (phone+LID x2)      ║
+║  allow_from        [4 entries]   Owner (phone+LID x2)      ║
 ║  unauthorized_dm   ignore        Silencio total              ║
 ║  group_policy      allowlist     Solo grupos autorizados     ║
 ║  mention_patterns  hermes        Invocación en grupos        ║
@@ -79,16 +79,16 @@
 ╠══════════════════════════════════════════════════════════════╣
 ║  CONTACTOS                                                   ║
 ╠══════════════════════════════════════════════════════════════╣
-║  👤 Sergio Durán   +526624707325   Admin (Full Access)       ║
+║  👤 Your Name   +5215551234567   Admin (Full Access)       ║
 ║     🔒 security ✅  ⚠️ approval: no (admin)  ✅ ACTIVO      ║
 ║                                                              ║
-║  👤 Jason          +13058495648    Consultoría & Desarrollo  ║
+║  👤 Alex          +13055559876    Consultoría & Desarrollo  ║
 ║     🔒 security ✅  ⚠️ approval: sí  ❌ NO ACTIVO           ║
 ║     (tiene perfil .md pero NO está en allow_from)            ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  GRUPOS HERMES (ejecutor)                                    ║
 ╠══════════════════════════════════════════════════════════════╣
-║  ✅ Curso          120363427149546617@g.us                   ║
+║  ✅ Curso          EXAMPLE_GROUP_ID_3@g.us                   ║
 ║     mention: "hermes" · solo owner · require_mention: true   ║
 ╚══════════════════════════════════════════════════════════════╝
 ```
@@ -112,7 +112,7 @@
 ║  Group blocking               ✅ allowlist    ✅ allowlist   ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Score: ██████████████████░░  95%                           ║
-║  -5% Jason tiene perfil pero no está activo (intencionado)  ║
+║  -5% Alex tiene perfil pero no está activo (intencionado)  ║
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
@@ -148,7 +148,7 @@
 
 ```diff
 + ✅ OpenClaw: 2 grupos monitoreados, ambos injection-protected
-+ ✅ Hermes: bridge connected, gateway en tmux, Sergio activo
++ ✅ Hermes: bridge connected, gateway en tmux, Owner activo
 + ✅ Grupo Curso activo con mention_patterns "hermes"
 + ✅ Higgsfield: token renovado, cron cada 50min
 + ✅ Seguridad: 95% — todos los permisos correctos
@@ -156,7 +156,7 @@
 
 ```
 ! ⚠️ 27 grupos detectados sin monitorear
-! ⚠️ Jason tiene perfil .md pero no está en allow_from (por diseño)
+! ⚠️ Alex tiene perfil .md pero no está en allow_from (por diseño)
 ! ⚠️ RAM al 57% — monitorear si sube
 ```
 
@@ -182,8 +182,8 @@
 ║  🔐 "auditoría de seguridad"    → /whatsapp security         ║
 ║                                                              ║
 ║  O dilo en español natural:                                  ║
-║  "agrega el grupo JCD a hermes"                              ║
-║  "autoriza a Jason para Meta Ads"                            ║
+║  "agrega el grupo FriendsGroup a hermes"                              ║
+║  "autoriza a Alex para Meta Ads"                            ║
 ║  "haz una auditoría de seguridad"                            ║
 ╚══════════════════════════════════════════════════════════════╝
 ```

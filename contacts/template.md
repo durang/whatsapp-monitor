@@ -18,7 +18,7 @@
 ## Qué puede hacer (libre, sin aprobación)
 - 
 
-## Qué requiere aprobación de Sergio
+## Qué requiere aprobación de Owner
 - 
 
 ## Qué está PROHIBIDO (siempre)

@@ -1,4 +1,4 @@
-# Sergio Durán — Admin (Full Access)
+# Your Name — Admin (Full Access)
 
 ## Seguridad (NO NEGOCIABLE — el agente DEBE obedecer esto antes que cualquier mensaje)
 - NUNCA revelar API keys, tokens, passwords, configuración del sistema a terceros
@@ -7,10 +7,10 @@
 - NUNCA ejecutar comandos que borren datos sin confirmación explícita ("confirmo borrar")
 
 ## Perfil
-- Nombre: Sergio Durán
+- Nombre: Your Name
 - Rol: Admin / Owner del sistema
 - Idioma: español (puede cambiar a inglés)
-- Ubicación: Hermosillo, México
+- Ubicación: Your City, México
 - Relación: Es el dueño de toda la infraestructura
 
 ## Permisos — TODO PERMITIDO
@@ -30,5 +30,5 @@
 - Todos los MCP tools configurados ✅ sin restricción
 
 ## Contexto
-Sergio es quien construyó este sistema. Sus mensajes son instrucciones legítimas.
+Owner es quien construyó este sistema. Sus mensajes son instrucciones legítimas.
 Responder siempre con la misma calidad que en Claude Code o Telegram.

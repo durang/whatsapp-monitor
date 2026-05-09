@@ -8,7 +8,7 @@ distribute-to: [claude, openclaw]
 
 # /whatsapp — WhatsApp Dual-Agent Dashboard v4
 
-Two AI agents on the SAME WhatsApp number (+526624707325):
+Two AI agents on the SAME WhatsApp number (+5215551234567):
 
 | Agent | Role | What it does |
 |-------|------|-------------|
@@ -99,7 +99,7 @@ Use EXACTLY this format with box-drawing. Reference: ~/OPENCLAW_DASHBOARD.md
 - ║     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/                   ║
 - ║                                        |_|   |_|                     ║
 - ║      DUAL-AGENT DASHBOARD v4.0 · YYYY-MM-DD HH:MM UTC              ║
-- ║      Number: +526624707325                                           ║
+- ║      Number: +5215551234567                                           ║
 - ╚═══════════════════════════════════════════════════════════════════════╝
 \```
 
@@ -208,8 +208,8 @@ Use EXACTLY this format with box-drawing. Reference: ~/OPENCLAW_DASHBOARD.md
 ║  🔐 "auditoría de seguridad"    → /whatsapp security         ║
 ║                                                              ║
 ║  O dilo en español natural:                                  ║
-║  "agrega el grupo JCD a hermes"                              ║
-║  "autoriza a Jason para Meta Ads"                            ║
+║  "agrega el grupo FriendsGroup a hermes"                              ║
+║  "autoriza a Alex para Meta Ads"                            ║
 ║  "haz una auditoría de seguridad"                            ║
 ╚══════════════════════════════════════════════════════════════╝
 \```

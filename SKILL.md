@@ -463,6 +463,102 @@ Cuando necesites información detallada sobre proyectos, clientes, o decisiones,
 consulta GBrain con mcp_gbrain_query o mcp_gbrain_search.
 ```
 
+## HERMES IN GROUPS — How it works
+
+### Invocation modes in groups:
+
+```
+MODE 1: mention_patterns (RECOMMENDED)
+  Config: mention_patterns: ["hermes", "Hermes"]
+  Usage: "hermes traduce este PDF" → Hermes responds
+  Others write normally → Hermes ignores
+  NO need to type phone number or @
+
+MODE 2: free_response_chats
+  Config: free_response_chats: ["GROUP_ID@g.us"]
+  Hermes responds to ALL your messages (no mention needed)
+  But ONLY to contacts in allow_from — ignores everyone else
+  Good for: groups where YOU are the only one who talks to Hermes
+
+MODE 3: require_mention: true (default)
+  Must use @NUMBER to invoke Hermes
+  Less convenient — use mention_patterns instead
+```
+
+### Example group config for a personal group:
+```yaml
+whatsapp:
+  dm_policy: allowlist
+  allow_from:
+    - "5216624707325"
+    - "12532764950535@lid"
+  group_policy: allowlist
+  group_allow_from:
+    - "120363XXXXXXXXX@g.us"    # group JCD
+  require_mention: true
+  mention_patterns:
+    - "hermes"
+    - "Hermes"
+    - "HERMES"
+  free_response_chats: []       # or add group ID here for no-mention mode
+```
+
+With this config:
+- In group JCD, you type "hermes traduce esto" → Hermes responds
+- Jason types "hermes do something" → Hermes ignores (Jason not in allow_from)
+- You type "hola que tal" → Hermes ignores (no "hermes" mention)
+
+### Adding a group — step by step:
+1. Run `/whatsapp groups` to see detected group IDs
+2. Pick the group ID (e.g. `120363425683992371@g.us`)
+3. Add to `group_allow_from` in `~/.hermes/config.yaml`
+4. Set `mention_patterns: ["hermes"]` so you can say "hermes" instead of @number
+5. Restart: kill tmux hermes-gw and start fresh
+6. Test: write "hermes hola" in the group
+
+## QUICK REFERENCE — "¿Qué quieres hacer?"
+
+When the user runs `/whatsapp`, AFTER showing the dashboard, always end with this menu:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  ¿Qué quieres hacer?                                       ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  📖 OpenClaw (lector de grupos)                              ║
+║  ├─ "agrega un grupo"           → /whatsapp add             ║
+║  ├─ "quita un grupo"            → /whatsapp remove           ║
+║  ├─ "muestra los grupos"        → /whatsapp groups           ║
+║  └─ "guía de GBrain"            → /whatsapp guide            ║
+║                                                              ║
+║  ⚕ Hermes (ejecutor por contacto)                           ║
+║  ├─ "autoriza a un contacto"    → /whatsapp hermes allow     ║
+║  ├─ "bloquea un contacto"       → /whatsapp hermes block     ║
+║  ├─ "muestra contactos"         → /whatsapp hermes list      ║
+║  ├─ "perfil de contacto"        → /whatsapp hermes profile   ║
+║  └─ "activa hermes en un grupo" → te guío paso a paso        ║
+║                                                              ║
+║  🔐 Seguridad                                               ║
+║  └─ "auditoría de seguridad"    → /whatsapp security         ║
+║                                                              ║
+║  También puedes decirlo en español natural:                  ║
+║  "agrega el grupo de JCD a hermes"                           ║
+║  "quiero que hermes escuche en un grupo"                     ║
+║  "autoriza a Jason para Meta Ads"                            ║
+║  "muéstrame los permisos de cada contacto"                   ║
+║  "haz una auditoría de seguridad de whatsapp"                ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+When user says "activa hermes en un grupo" or similar, guide them:
+1. Show detected groups with `/whatsapp groups`
+2. Ask which group and what name to give it
+3. Ask if they want mention_patterns (recommended) or free_response
+4. Edit `~/.hermes/config.yaml` accordingly
+5. Restart gateway (tmux kill + start)
+6. Verify and tell them how to invoke ("escribe 'hermes' seguido de lo que quieras")
+
 ## Trigger phrases
 
 - /whatsapp
@@ -480,3 +576,5 @@ consulta GBrain con mcp_gbrain_query o mcp_gbrain_search.
 - bloquea contacto
 - perfil de contacto
 - seguridad whatsapp
+- activa hermes en un grupo
+- hermes en grupo

@@ -166,9 +166,10 @@ Show ALL groups: OpenClaw monitored + Hermes active + detected. With NAMES from 
 1. Ask: name, role, permissions, prohibited tools, GBrain scope
 2. Auto-detect LID from session files or bridge log
 3. Create profile at ~/.hermes/whatsapp/contacts/+NUMBER.md (MUST include security block, GBrain scope, cross-platform context)
-4. Add 4 formats to allow_from (phone, JID, LID, LID JID)
-5. Restart tmux gateway
-6. Verify bridge health
+4. Create GBrain live page: mcp_gbrain_put_page slug=contacts/NAME with type=person, tags=[contact], estado actual, canales, historial vacío. This page is updated automatically by Hermes after each interaction.
+5. Add 4 formats to allow_from (phone, JID, LID, LID JID)
+6. Restart tmux gateway
+7. Verify bridge health + verify GBrain page exists
 
 ### /whatsapp hermes block NUMBER
 Remove from allow_from. Keep .md. Restart.

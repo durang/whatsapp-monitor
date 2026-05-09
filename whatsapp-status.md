@@ -1,129 +1,211 @@
-# WhatsApp Dual-Agent Dashboard
-> Generado: 2026-05-09 04:09 UTC
-> Skill version: 3.0
+```diff
+- ╔═══════════════════════════════════════════════════════════════════════╗
+- ║  __        ___         _       _                                    ║
+- ║  \ \      / / |__   __ _| |_ ___/ \   _ __  _ __                    ║
+- ║   \ \ /\ / /| '_ \ / _` | __/ __| |  | '_ \| '_ \                  ║
+- ║    \ V  V / | | | | (_| | |_\__ \ |__| |_) | |_) |                  ║
+- ║     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/                   ║
+- ║                                        |_|   |_|                     ║
+- ║      DUAL-AGENT DASHBOARD v4.0 · 2026-05-09 07:51 UTC              ║
+- ║      Number: +526624707325                                           ║
+- ╚═══════════════════════════════════════════════════════════════════════╝
+```
 
 ---
 
-## 📖 OpenClaw — LECTOR
+## 1. LIVE STATUS
 
-| Campo | Estado |
-|---|---|
-| Conexión | ✅ connected |
-| Número | +526624707325 |
-| Modo | Read-only (observador silencioso) |
-| Gateway | ✅ active |
-
-### Configuración
-| Setting | Valor | Significado |
-|---|---|---|
-| enabled | true | Canal activo |
-| dmPolicy | allowlist | Solo números autorizados |
-| groupPolicy | allowlist | Solo grupos configurados |
-| sendReadReceipts | false | Sin visto azul |
-| reactionLevel | off | Sin reacciones |
-
-### Grupos Monitoreados (2)
-| # | ID | Modo | Injection Protected | Prompt |
-|---|---|---|---|---|
-| 1 | 120363425126131671@g.us | read-only, mention=false | ✅ | 2652 chars |
-| 2 | 120363406840968099@g.us | read-only, mention=false | ✅ | 2696 chars |
-
-### DMs Permitidos (lectura)
-| Número | Estado |
-|---|---|
-| +526624707325 | ✅ Sergio |
-| +13058495648 | ✅ Jason |
-| +17608285436 | ✅ |
-
-### Grupos Detectados sin Monitorear: 27
-Usa `/whatsapp add` para agregar.
+```
+╔══════════════════════════════════════════════════════════════╗
+║  AGENT              ROLE        STATE          UPTIME       ║
+╠══════════════════════════════════════════════════════════════╣
+║  📖 OpenClaw        LECTOR      ✅ active       14h         ║
+║  ⚕ Hermes          EJECUTOR    ✅ active (tmux) 45min      ║
+║  🌉 WA Bridge       TRANSPORT   ✅ connected     45min      ║
+╠══════════════════════════════════════════════════════════════╣
+║  RAM    ███████████░░░░░░░░░  4470/7823 MB (57%)            ║
+║  LOAD   ██░░░░░░░░░░░░░░░░░░  0.47 (low)                   ║
+║  UPTIME 0 days, 14h 32m                                     ║
+╚══════════════════════════════════════════════════════════════╝
+```
 
 ---
 
-## ⚕ Hermes — EJECUTOR
+## 2. 📖 OpenClaw — LECTOR
 
-| Campo | Estado |
-|---|---|
-| Conexión | ✅ connected |
-| Bridge | port 3000, uptime 1h |
-| Gateway | ✅ active |
-| Mode | bot |
-| Secrets Redaction | ✅ true |
-| Session Perms | ✅ 700 |
-| Creds Perms | ✅ 600 |
-| Config Perms | ✅ 600 |
-
-### Configuración
-| Setting | Valor | Significado |
-|---|---|---|
-| dm_policy | allowlist | Solo contactos autorizados |
-| allow_from | [] | ⚠️ VACÍO — nadie activo |
-| unauthorized_dm_behavior | ignore | Silencio total |
-| group_policy | disabled | No toca grupos |
-
-### Perfiles de Contacto (2)
-| # | Nombre | Número | Rol | Perfil | allow_from |
-|---|---|---|---|---|---|
-| 1 | Sergio Durán | +526624707325 | Admin | ✅ | ❌ inactivo |
-| 2 | Jason | +13058495648 | Consultoría | ✅ | ❌ inactivo |
-
-### Seguridad por Contacto
-| Contacto | Injection Protection | Approval Required | Prohibited Tools |
-|---|---|---|---|
-| Sergio | ✅ | No (admin) | Ninguno |
-| Jason | ✅ | Sí | put_page, terminal |
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CONFIGURACIÓN                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  enabled          true          Canal activo                 ║
+║  dmPolicy         allowlist     Solo números autorizados     ║
+║  groupPolicy      allowlist     Solo grupos configurados     ║
+║  sendReadReceipts false         Sin visto azul               ║
+║  reactionLevel    off           Sin reacciones               ║
+╠══════════════════════════════════════════════════════════════╣
+║  GRUPOS MONITOREADOS (2)                                     ║
+╠══════════════════════════════════════════════════════════════╣
+║  ✅ JPC - Full Deck    120363425126131671@g.us               ║
+║     read-only · mention: off · 🔒 injection ✅ · 2652 chars ║
+║  ✅ JPC - Dev - Duran  120363406840968099@g.us               ║
+║     read-only · mention: off · 🔒 injection ✅ · 2696 chars ║
+╠══════════════════════════════════════════════════════════════╣
+║  DMs PERMITIDOS (lectura)                                    ║
+╠══════════════════════════════════════════════════════════════╣
+║  ✅ +13058495648    Jason                                    ║
+║  ✅ +17608285436    (contacto)                               ║
+║  ❌ Sergio removido — Hermes maneja sus DMs ahora            ║
+╠══════════════════════════════════════════════════════════════╣
+║  Grupos detectados sin monitorear: 27                        ║
+║  Usa /whatsapp add para agregar                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
 
 ---
 
-## 🔐 Seguridad Global
+## 3. ⚕ Hermes — EJECUTOR
 
-| Check | OpenClaw | Hermes |
-|---|---|---|
-| Config perms (600) | ✅ | ✅ |
-| Session perms (700/600) | ✅ | ✅ |
-| Injection protection | ✅ 2/2 | ✅ 2/2 |
-| Secrets redaction | N/A | ✅ |
-| Bridge port | N/A | ✅ 127.0.0.1 |
-| Tailscale exposure | N/A | ✅ NOT exposed |
-
-**Security Score: ██████████████████░░  95%**
-
----
-
-## 📊 Cuándo usar cada uno
-
-| Escenario | Agente | Ejemplo |
-|---|---|---|
-| Monitorear grupo de trabajo | 📖 OpenClaw | Lee JPC, guarda en GBrain |
-| Cliente pide métricas de ads | ⚕ Hermes | Karina consulta Meta Ads |
-| Guardar decisiones de grupo | 📖 OpenClaw | Registra acuerdos en GBrain |
-| Traducir PDF en grupo personal | ⚕ Hermes | Tú pides traducción en JCD |
-| Ejecutar campaña aprobada | ⚕ Hermes | Sergio autoriza, Hermes ejecuta |
-
----
-
-## Comandos
-
-| Comando | Qué hace |
-|---|---|
-| `/whatsapp` | Este dashboard |
-| `/whatsapp add <grupo>` | Agregar grupo a OpenClaw |
-| `/whatsapp hermes allow <num>` | Autorizar contacto en Hermes |
-| `/whatsapp hermes block <num>` | Bloquear contacto en Hermes |
-| `/whatsapp hermes list` | Ver contactos |
-| `/whatsapp hermes profile <num>` | Ver perfil de contacto |
-| `/whatsapp security` | Auditoría de seguridad |
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CONFIGURACIÓN                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  dm_policy         allowlist     Solo contactos autorizados  ║
+║  allow_from        [4 entries]   Sergio (phone+LID x2)      ║
+║  unauthorized_dm   ignore        Silencio total              ║
+║  group_policy      allowlist     Solo grupos autorizados     ║
+║  mention_patterns  hermes        Invocación en grupos        ║
+║  secrets_redaction true          Tokens ocultos en logs      ║
+║  gateway           tmux          hermes-gw session           ║
+╠══════════════════════════════════════════════════════════════╣
+║  CONTACTOS                                                   ║
+╠══════════════════════════════════════════════════════════════╣
+║  👤 Sergio Durán   +526624707325   Admin (Full Access)       ║
+║     🔒 security ✅  ⚠️ approval: no (admin)  ✅ ACTIVO      ║
+║                                                              ║
+║  👤 Jason          +13058495648    Consultoría & Desarrollo  ║
+║     🔒 security ✅  ⚠️ approval: sí  ❌ NO ACTIVO           ║
+║     (tiene perfil .md pero NO está en allow_from)            ║
+╠══════════════════════════════════════════════════════════════╣
+║  GRUPOS HERMES (ejecutor)                                    ║
+╠══════════════════════════════════════════════════════════════╣
+║  ✅ Curso          120363427149546617@g.us                   ║
+║     mention: "hermes" · solo owner · require_mention: true   ║
+╚══════════════════════════════════════════════════════════════╝
+```
 
 ---
 
-## Sistema
+## 4. 🔐 SEGURIDAD
 
-| Metrica | Valor |
-|---|---|
-| Uptime | 10h 50m |
-| RAM | 3.0 / 7.6 GB (39%) |
-| Load | 0.77 |
+```
+╔══════════════════════════════════════════════════════════════╗
+║  CHECK                        OPENCLAW        HERMES        ║
+╠══════════════════════════════════════════════════════════════╣
+║  Config perms (600)           ✅ 600          ✅ 600         ║
+║  .env perms (600)             N/A             ✅ 600         ║
+║  Session perms (700/600)      ✅              ✅ 700/600     ║
+║  Injection protection         ✅ 2/2 grupos   ✅ 2/2 perfiles║
+║  Secrets redaction            N/A             ✅ true        ║
+║  Bridge port (localhost)      N/A             ✅ 127.0.0.1   ║
+║  Tailscale exposure           N/A             ✅ NOT exposed ║
+║  DM blocking                  ✅ allowlist    ✅ allowlist   ║
+║  Group blocking               ✅ allowlist    ✅ allowlist   ║
+╠══════════════════════════════════════════════════════════════╣
+║  Score: ██████████████████░░  95%                           ║
+║  -5% Jason tiene perfil pero no está activo (intencionado)  ║
+╚══════════════════════════════════════════════════════════════╝
+```
 
 ---
 
-*Scanned 2026-05-09 04:09 UTC · /whatsapp v3.0 · Dual-Agent Dashboard*
+## 5. 📊 CÓMO FUNCIONA
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  ESCENARIO                      AGENTE        RESULTADO     ║
+╠══════════════════════════════════════════════════════════════╣
+║  Monitorear grupo de trabajo    📖 OpenClaw   → GBrain      ║
+║  Cliente pide métricas de ads   ⚕ Hermes     → MCP tools   ║
+║  Guardar decisiones de grupo    📖 OpenClaw   → GBrain      ║
+║  "hermes traduce esto" en grupo ⚕ Hermes     → responde    ║
+║  Amigo dice "hermes" en grupo   ⚕ Hermes     → IGNORA      ║
+║  Random te escribe DM           ⚕ Hermes     → IGNORA      ║
+║  Ejecutar campaña con approval  ⚕ Hermes     → pide tu OK  ║
+╠══════════════════════════════════════════════════════════════╣
+║  SEGURIDAD: 5 CAPAS                                         ║
+╠══════════════════════════════════════════════════════════════╣
+║  1. Bridge         WHATSAPP_ALLOWED_USERS    quién pasa     ║
+║  2. Gateway        dm_policy: allowlist      quién se procesa║
+║  3. Contact .md    perfil por persona        qué puede hacer║
+║  4. Approval flow  acciones destructivas     tu aprobación  ║
+║  5. MCP filtering  tools include/exclude     qué tools usa  ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 6. ALERTAS
+
+```diff
++ ✅ OpenClaw: 2 grupos monitoreados, ambos injection-protected
++ ✅ Hermes: bridge connected, gateway en tmux, Sergio activo
++ ✅ Grupo Curso activo con mention_patterns "hermes"
++ ✅ Higgsfield: token renovado, cron cada 50min
++ ✅ Seguridad: 95% — todos los permisos correctos
+```
+
+```
+! ⚠️ 27 grupos detectados sin monitorear
+! ⚠️ Jason tiene perfil .md pero no está en allow_from (por diseño)
+! ⚠️ RAM al 57% — monitorear si sube
+```
+
+---
+
+## 7. ¿Qué quieres hacer?
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║  📖 OpenClaw (lector de grupos)                              ║
+║  ├─ "agrega un grupo"           → /whatsapp add             ║
+║  ├─ "quita un grupo"            → /whatsapp remove           ║
+║  └─ "muestra los grupos"        → /whatsapp groups           ║
+║                                                              ║
+║  ⚕ Hermes (ejecutor por contacto)                           ║
+║  ├─ "autoriza a un contacto"    → /whatsapp hermes allow     ║
+║  ├─ "bloquea un contacto"       → /whatsapp hermes block     ║
+║  ├─ "muestra contactos"         → /whatsapp hermes list      ║
+║  ├─ "perfil de contacto"        → /whatsapp hermes profile   ║
+║  └─ "activa hermes en un grupo" → te guío paso a paso        ║
+║                                                              ║
+║  🔐 "auditoría de seguridad"    → /whatsapp security         ║
+║                                                              ║
+║  O dilo en español natural:                                  ║
+║  "agrega el grupo JCD a hermes"                              ║
+║  "autoriza a Jason para Meta Ads"                            ║
+║  "haz una auditoría de seguridad"                            ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 8. ARCHIVOS CLAVE
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  ARCHIVO                            PROPÓSITO               ║
+╠══════════════════════════════════════════════════════════════╣
+║  ~/.openclaw/openclaw.json          Config OpenClaw WA       ║
+║  ~/.hermes/config.yaml              Config Hermes WA         ║
+║  ~/.hermes/.env                     Env vars (tokens, mode)  ║
+║  ~/.hermes/whatsapp/session/        Baileys session (700)    ║
+║  ~/.hermes/whatsapp/contacts/*.md   Perfiles de contacto     ║
+║  ~/whatsapp-status.md               Este dashboard           ║
+║  bridge.js (parcheado)              Bridge WhatsApp           ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+*Scanned 2026-05-09 07:51 UTC · /whatsapp v4.0 · Dual-Agent Dashboard*

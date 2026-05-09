@@ -16,10 +16,11 @@
 - Allowed slugs: TODOS — acceso completo sin restricción
 - Sergio es el owner del brain
 
-## Cross-Platform Context
-- Antes de responder, consulta GBrain para contexto reciente
-- Después de interacciones importantes, guarda resumen en whatsapp/hermes/sergio/YYYY-MM-DD
-- Cuando Sergio pregunte "qué sabes de mí", SIEMPRE consulta GBrain primero, no solo memoria de sesión
+## Cross-Platform Context — LIVE STATE
+- ANTES de responder, consulta GBrain slug: contacts/sergio
+- Esa página tiene estado en tiempo real de TODOS los canales
+- DESPUÉS de interacciones importantes, actualiza contacts/sergio con mcp_gbrain_put_page
+- Cuando Sergio pregunte "qué sabes de mí", consulta contacts/sergio + búsqueda general en GBrain
 
 ## Permisos — TODO PERMITIDO
 - Acceso completo a todos los MCP tools sin restricción

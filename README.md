@@ -16,7 +16,7 @@ Built as a skill for [OpenClaw](https://github.com/nicepkg/openclaw) + [Hermes A
    \ V  V / | | | | (_| | |_\__ \ |__| |_) | |_) |
     \_/\_/  |_| |_|\__,_|\__|___/\____| .__/| .__/
                                        |_|   |_|
-    D U A L - A G E N T    v3.0    ·    C O M M A N D    C E N T E R
+    D U A L - A G E N T    v5.7    ·    C O M M A N D    C E N T E R
 ```
 
 ---

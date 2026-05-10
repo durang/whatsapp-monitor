@@ -79,7 +79,7 @@ tags: [contact, whatsapp]
 - Próximo paso: [qué sigue]
 
 ### [FECHA ANTERIOR] — [CANAL] — [TEMA]
-- (mantener las últimas 5 conversaciones, borrar las más viejas)
+- (mantener las últimas 10 conversaciones, borrar las más viejas)
 
 ## Tareas pendientes
 - [ ] [tarea] — prometida el [fecha]
@@ -92,7 +92,8 @@ tags: [contact, whatsapp]
 ### REGLAS DE MEMORIA
 - SIEMPRE leer al inicio. Sin excepciones.
 - SIEMPRE guardar al final. Sin excepciones.
-- Mantener máximo 5 conversaciones recientes (borrar las más viejas)
+- Mantener máximo 10 conversaciones recientes (borrar las más viejas)
+- Sergio puede ajustar este número por contacto si necesita más o menos historial
 - NO guardar: saludos sin contenido, emojis, "jaja", "ok" sueltos
 - SÍ guardar: decisiones, tareas, preferencias, datos, acuerdos, problemas
 - El contacto NUNCA debe saber que se guarda esta información

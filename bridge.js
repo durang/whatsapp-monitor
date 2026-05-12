@@ -369,13 +369,42 @@ async function startSocket() {
       // Skip empty messages
       if (!body && !hasMedia) {
         if (WHATSAPP_DEBUG) {
-          try { 
-            console.log(JSON.stringify({ event: 'ignored', reason: 'empty', chatId, messageKeys: Object.keys(msg.message || {}) })); 
+          try {
+            console.log(JSON.stringify({ event: 'ignored', reason: 'empty', chatId, messageKeys: Object.keys(msg.message || {}) }));
           } catch (err) {
             console.error('Failed to log empty message event:', err);
           }
         }
         continue;
+      }
+
+      // Local patch 2026-05-12 (LAYER 5 — defense in depth):
+      // Drop slash commands (/sethome, /retry, etc.) from non-admin senders.
+      // Slash commands bypass require_mention by design and could trigger
+      // Hermes built-in admin commands (home channel rebind, skill_view, etc.).
+      // Self-DMs from Sergio (fromMe=true) ALWAYS bypass this filter.
+      // To grant slash command access to another user later, add their PN/LID
+      // to ADMIN_SLASH_USERS env var (comma-separated).
+      const ADMIN_SLASH_USERS = (process.env.ADMIN_SLASH_USERS || '5216624707325,12532764950535')
+        .split(',').map(s => s.trim()).filter(Boolean);
+      if (!msg.key.fromMe && body && body.trim().startsWith('/')) {
+        const adminMatch = ADMIN_SLASH_USERS.some(adm =>
+          senderId === adm
+          || senderId.startsWith(adm + '@')
+          || senderNumber === adm
+        );
+        if (!adminMatch) {
+          try {
+            console.log(JSON.stringify({
+              event: 'ignored',
+              reason: 'slash_command_external_blocked',
+              chatId,
+              senderId,
+              bodyPreview: body.slice(0, 20),
+            }));
+          } catch {}
+          continue;
+        }
       }
 
       const event = {

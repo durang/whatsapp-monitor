@@ -68,18 +68,31 @@ GROUP_POLICY = WA.get("group_policy")
 # ─────────────────────────────────────────────────────────────────────────
 
 
-def bridge_passes(sender_id: str, chat_id: str, from_me: bool) -> Tuple[bool, str]:
-    """Simulate bridge.js logic (lines 250-280)."""
+def bridge_passes(sender_id: str, chat_id: str, from_me: bool, body: str = "") -> Tuple[bool, str]:
+    """Simulate bridge.js logic with Layer 5 (slash command filter)."""
     if from_me:
         if "status" in chat_id:
             return (False, "DROP — bridge: status broadcast")
         return (True, "PASS — bridge: fromMe bypass")
 
-    # Check allowlist
+    # Check allowlist (Layer 1)
     sender_number = sender_id.split("@")[0]
-    if sender_id in ALLOWED or sender_number in ALLOWED:
-        return (True, "PASS — bridge: allowlist match")
-    return (False, "DROP — bridge: allowlist_mismatch")
+    if not (sender_id in ALLOWED or sender_number in ALLOWED):
+        return (False, "DROP — bridge: allowlist_mismatch")
+
+    # LAYER 5 (2026-05-12): block slash commands from non-admin senders
+    ADMIN_SLASH_USERS = os.environ.get(
+        "ADMIN_SLASH_USERS", "5216624707325,12532764950535"
+    ).split(",")
+    if body and body.strip().startswith("/"):
+        admin_match = any(
+            sender_id == adm or sender_id.startswith(adm + "@") or sender_number == adm
+            for adm in [a.strip() for a in ADMIN_SLASH_USERS if a.strip()]
+        )
+        if not admin_match:
+            return (False, "DROP — bridge LAYER 5: slash_command_external_blocked")
+
+    return (True, "PASS — bridge: allowlist match")
 
 
 def hermes_should_respond(
@@ -115,7 +128,7 @@ def simulate(
     sender_id: str, chat_id: str, body: str, from_me: bool, is_group: bool
 ) -> Tuple[bool, str]:
     """End-to-end: bridge filter → Hermes _should_respond."""
-    passes_bridge, br = bridge_passes(sender_id, chat_id, from_me)
+    passes_bridge, br = bridge_passes(sender_id, chat_id, from_me, body)
     if not passes_bridge:
         return (False, br)
     responds, hr = hermes_should_respond(sender_id, chat_id, body, is_group)
@@ -190,9 +203,16 @@ SCENARIOS = [
     ("Sergio fromMe en status broadcast",
      SERGIO_PN, "status@broadcast", "hermes",
      True, False, False),
-    ("Mention con slash command de Nati",
+    # ── LAYER 5: slash command filter for non-admin (2026-05-12 patch) ──
+    ("Nati intenta /sethome (slash command externo)",
      NATI_LID + "@lid", NATI_LID + "@lid", "/sethome",
-     False, False, True),  # `/` bypasses require_mention — KNOWN behavior
+     False, False, False),  # LAYER 5 lo bloquea en bridge
+    ("Nati intenta /retry (slash command externo)",
+     NATI_LID + "@lid", NATI_LID + "@lid", "/retry",
+     False, False, False),  # LAYER 5 lo bloquea
+    ("Sergio fromMe usa /sethome (admin tiene paso)",
+     SERGIO_PN, SERGIO_PN + "@s.whatsapp.net", "/sethome",
+     True, False, True),  # admin bypass por fromMe + ADMIN_SLASH_USERS
 ]
 
 

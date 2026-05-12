@@ -477,6 +477,35 @@ git diff --stat origin/master..HEAD
 4. Gateway: tmux not systemd
 5. psutil: uv pip install
 6. Higgsfield: User-Agent in refresh script
+7. WhatsAppAdapter.send_image kwargs patch (pending upstream PR)
+
+## Local patches to hermes-agent (pending upstream)
+
+### 1. `send_image` accepts `**kwargs` (2026-05-12)
+
+**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` line ~950
+
+**Why**: Upstream commit `33c89e52e` (PR #3571) added `**kwargs` to `send_image_file`, `send_video`, and `send_document` so they could ignore the `metadata=...` parameter passed by `base.send_multiple_images()`. But the fix **missed `send_image`** (URL-based variant used when Higgsfield returns an image URL). Without this patch, `Nati hermes hazme una imagen` → image generated → `TypeError: send_image() got an unexpected keyword argument 'metadata'` → fallback to text URL instead of native attachment.
+
+**Patch** (same pattern as the upstream fix):
+```python
+async def send_image(
+    self,
+    chat_id: str,
+    image_url: str,
+    caption: Optional[str] = None,
+    reply_to: Optional[str] = None,
+    **kwargs,  # ← LOCAL PATCH
+) -> SendResult:
+```
+
+**Reapply after upstream update**: if you `git pull` in `~/.hermes/hermes-agent/` and lose this, reapply with `Edit`. Or open a PR upstream extending #3571 to `send_image`.
+
+**How to verify the patch is in place**:
+```bash
+grep -A6 "async def send_image" ~/.hermes/hermes-agent/gateway/platforms/whatsapp.py | head -10
+# Should show '**kwargs' in the send_image (URL-based) signature
+```
 
 ## Permissions matrix
 ```

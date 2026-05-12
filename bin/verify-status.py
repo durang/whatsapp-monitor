@@ -120,10 +120,21 @@ def claims() -> list[Claim]:
                        "[]" if "fallback_providers: []" in hermes_config() else "tiene chain")),
 
         # --- §3/§4 SECURITY ---
-        Claim("§3/§4", "Bridge env WHATSAPP_ALLOWED_USERS = solo Sergio",
+        Claim("§3/§4", "Bridge env WHATSAPP_ALLOWED_USERS contiene Sergio + Nati (6 entries)",
               "/proc/<bridge_pid>/environ → WHATSAPP_ALLOWED_USERS",
               lambda: ((v := proc_environ(pid, "WHATSAPP_ALLOWED_USERS")),
-                       (v == "5216624707325,12532764950535", v or "no bridge running"))[1]),
+                       (
+                         v is not None
+                         and all(jid in v for jid in [
+                             "5216624707325",      # Sergio phone
+                             "12532764950535",     # Sergio LID
+                             "526642916010",       # Nati phone (sin "1")
+                             "5216642916010",      # Nati phone (con "1")
+                             "202958830612615",    # Nati LID 1
+                             "1100803538944",      # Nati LID 2
+                         ]),
+                         v or "no bridge running"
+                       ))[1]),
         Claim("§3/§4", "Bridge env coincide con ~/.hermes/.env (sin drift)",
               ".env keys vs /proc/PID/environ",
               lambda: (_check_env_drift(pid))),
@@ -184,9 +195,9 @@ def claims() -> list[Claim]:
               "openclaw.json channels.whatsapp.allowFrom",
               lambda: ((openclaw_json().get("channels", {}).get("whatsapp", {}).get("allowFrom") == ['+13058495648']),
                        str(openclaw_json().get("channels", {}).get("whatsapp", {}).get("allowFrom")))),
-        Claim("§2/§11", "OpenClaw groups count = 2",
+        Claim("§2/§11", "OpenClaw groups count = 4 (JPC + JPC-Dev + JPC:JB/Bud/Duran + Alteca)",
               "openclaw.json channels.whatsapp.groups",
-              lambda: ((len(openclaw_json().get("channels", {}).get("whatsapp", {}).get("groups", {})) == 2),
+              lambda: ((len(openclaw_json().get("channels", {}).get("whatsapp", {}).get("groups", {})) == 4),
                        f"{len(openclaw_json().get('channels', {}).get('whatsapp', {}).get('groups', {}))} groups")),
         Claim("§2/§11", "OpenClaw selfChatMode = false",
               "openclaw.json channels.whatsapp.selfChatMode",
@@ -219,6 +230,10 @@ def claims() -> list[Claim]:
               "ls -la ~/whatsapp-monitor/bin/send-dashboard.sh",
               lambda: ((os.access(str(HOME / "whatsapp-monitor/bin/send-dashboard.sh"), os.X_OK)),
                        "ejecutable" if os.access(str(HOME / "whatsapp-monitor/bin/send-dashboard.sh"), os.X_OK) else "MISSING/no-exec")),
+        Claim("§16", "Local patches to hermes-agent all applied (check-patches.py)",
+              "python3 ~/whatsapp-monitor/bin/check-patches.py → exit 0",
+              lambda: ((os.system(f"python3 {HOME / 'whatsapp-monitor/bin/check-patches.py'} > /dev/null 2>&1") == 0),
+                       "all patches applied" if os.system(f"python3 {HOME / 'whatsapp-monitor/bin/check-patches.py'} > /dev/null 2>&1") == 0 else "ONE OR MORE PATCHES MISSING — run script for details")),
     ]
 
 

@@ -481,31 +481,43 @@ git diff --stat origin/master..HEAD
 
 ## Local patches to hermes-agent (pending upstream)
 
+> **Auto-check tool**: `python3 ~/whatsapp-monitor/bin/check-patches.py` (exit 0 = todos aplicados; 1 = alguno falta). También se ejecuta automáticamente como Claim §16 de `verify-status.py`. Si haces `git pull` en `~/.hermes/hermes-agent/` y un parche se pierde, este script te lo dice y dónde reaplicarlo.
+
 ### 1. `send_image` accepts `**kwargs` (2026-05-12)
 
-**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` line ~950
+**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` ~line 950
 
-**Why**: Upstream commit `33c89e52e` (PR #3571) added `**kwargs` to `send_image_file`, `send_video`, and `send_document` so they could ignore the `metadata=...` parameter passed by `base.send_multiple_images()`. But the fix **missed `send_image`** (URL-based variant used when Higgsfield returns an image URL). Without this patch, `Nati hermes hazme una imagen` → image generated → `TypeError: send_image() got an unexpected keyword argument 'metadata'` → fallback to text URL instead of native attachment.
+**Why**: Upstream commit `33c89e52e` (PR #3571) added `**kwargs` to `send_image_file`, `send_video`, and `send_document` — pero **missed `send_image`** (URL-based, usado cuando Higgsfield devuelve URL). Sin el patch, `Nati hermes hazme una imagen` → genera → `TypeError: send_image() got an unexpected keyword argument 'metadata'` → fallback a URL en texto, NO foto adjunta.
 
-**Patch** (same pattern as the upstream fix):
-```python
-async def send_image(
-    self,
-    chat_id: str,
-    image_url: str,
-    caption: Optional[str] = None,
-    reply_to: Optional[str] = None,
-    **kwargs,  # ← LOCAL PATCH
-) -> SendResult:
-```
+**Marker**: `Local patch 2026-05-12 (pending upstream PR): upstream commit 33c89e52e`
 
-**Reapply after upstream update**: if you `git pull` in `~/.hermes/hermes-agent/` and lose this, reapply with `Edit`. Or open a PR upstream extending #3571 to `send_image`.
+### 2. `require_mention` aplica también a DMs (2026-05-12)
 
-**How to verify the patch is in place**:
-```bash
-grep -A6 "async def send_image" ~/.hermes/hermes-agent/gateway/platforms/whatsapp.py | head -10
-# Should show '**kwargs' in the send_image (URL-based) signature
-```
+**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` ~line 440 (en `_should_respond`)
+
+**Why**: Por diseño upstream, `require_mention=true` SOLO aplica a grupos. Cualquier DM de un contacto en allowlist activa Hermes automáticamente, sin necesidad de decir "hermes". Eso impide que Sergio pueda chatear normal con un contacto autorizado (ej. Nati) sin que Hermes intercepte. Patch extiende la misma lógica de grupos a DMs: si `require_mention=true`, el DM también requiere trigger. **El self-DM de Sergio (fromMe=true) sigue bypassed en bridge.js**.
+
+**Marker**: `Local patch 2026-05-12 (pending upstream PR): apply require_mention`
+
+### 3. `interim_assistant_messages` per-platform (2026-05-12)
+
+**Files**:
+- `~/.hermes/hermes-agent/gateway/display_config.py` (`_GLOBAL_DEFAULTS` agrega `interim_assistant_messages: True`)
+- `~/.hermes/hermes-agent/gateway/run.py` ~line 13390 (cambio `display_config.get(...)` → `resolve_display_setting(user_config, platform_key, ...)`)
+
+**Why**: Lifecycle status messages como "⚡ Interrupting current task" y "⏳ Retrying in X.Ys" se emiten via `_emit_status` → `status_callback` y se envían en TODAS las plataformas. La config `display.interim_assistant_messages: false` solo silenciaba globalmente — no había forma per-platform. Patch hace que el setting sea overrideable como `tool_progress`: `display.platforms.whatsapp.interim_assistant_messages: false` silencia esos mensajes SOLO en WhatsApp, mientras Telegram y CLI los siguen mostrando.
+
+**Markers**:
+- `Local patch 2026-05-12 (pending upstream PR): make interim_assistant_messages`
+- `Local patch 2026-05-12 (pending upstream PR): use resolve_display_setting`
+
+### Cómo reaplicar tras `git pull` en hermes-agent
+
+1. Correr `python3 ~/whatsapp-monitor/bin/check-patches.py` para ver cuál falta
+2. Para cada parche MISSING, ver el `fix_hint` que el script imprime
+3. Aplicar con `Edit` siguiendo los markers (cada patch ya documenta el patrón a aplicar)
+4. Restart Hermes: `tmux kill-session -t hermes-gw && pkill -f bridge.js` → esperar 4s → `tmux new-session -d -s hermes-gw "HERMES_HOME=/home/ec2-user/.hermes /home/ec2-user/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run > /tmp/hermes-gw.log 2>&1"`
+5. Re-correr check-patches.py para confirmar 4/4 OK
 
 ## Permissions matrix
 ```

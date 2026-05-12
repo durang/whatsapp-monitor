@@ -234,6 +234,10 @@ def claims() -> list[Claim]:
               "python3 ~/whatsapp-monitor/bin/check-patches.py → exit 0",
               lambda: ((os.system(f"python3 {HOME / 'whatsapp-monitor/bin/check-patches.py'} > /dev/null 2>&1") == 0),
                        "all patches applied" if os.system(f"python3 {HOME / 'whatsapp-monitor/bin/check-patches.py'} > /dev/null 2>&1") == 0 else "ONE OR MORE PATCHES MISSING — run script for details")),
+        Claim("§4", "Security audit: 15/15 scenarios pass (default-deny + require_mention sealed)",
+              "python3 ~/whatsapp-monitor/bin/security-audit.py → exit 0",
+              lambda: ((os.system(f"python3 {HOME / 'whatsapp-monitor/bin/security-audit.py'} > /dev/null 2>&1") == 0),
+                       "15/15 escenarios sellan capas 1-4" if os.system(f"python3 {HOME / 'whatsapp-monitor/bin/security-audit.py'} > /dev/null 2>&1") == 0 else "BRECHA DETECTADA — correr script para detalles")),
     ]
 
 

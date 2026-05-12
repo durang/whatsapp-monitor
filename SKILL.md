@@ -342,19 +342,44 @@ WHATSAPP_ALLOWED_USERS=5216624707325,12532764950535
 ```
 Ambos son el mismo Sergio en formatos PN/LID — el bridge resuelve via `expandWhatsAppIdentifiers` usando `lid-mapping-*.json` de Baileys.
 
-### Cómo agregar/promover un contacto (procedimiento estricto, 6 pasos)
+### Cómo agregar/promover un contacto (procedimiento estricto)
+
+**Regla canónica — LAS 4 FORMAS (no negociable):** un contacto debe agregarse en **TODAS** sus 4 representaciones porque el bridge compara `senderId` string-exact contra la allowlist. Si falta una forma, los mensajes en esa forma se dropean silenciosamente con `allowlist_mismatch`.
+
+| # | Forma | Ejemplo | Cuándo se usa |
+|---|---|---|---|
+| 1 | **Phone (PN)** | `5216642916010` | DMs viejos, contactos que escriben con phone canon |
+| 2 | **Phone con sufijo** | `5216642916010@s.whatsapp.net` | DMs nuevos, formato moderno |
+| 3 | **LID puro** | `202958830612615` | Mensajes desde dispositivos vinculados |
+| 4 | **LID con sufijo** | `202958830612615@lid` | Como aparece en `chatId`/`senderId` de eventos |
+
+**Para sacar el LID** del phone: ver `~/.hermes/whatsapp/session/lid-mapping-<LID>_reverse.json` (contiene el phone). Si un contacto tiene 2 phones distintos (ej. MX clásico con "1" + moderno sin "1"), cada phone tendrá su propio LID — agrega los 4 valores de cada phone (en total 8 entradas).
+
+#### Pasos
 1. **Decidir el scope** — ¿qué puede hacer? (general / proyecto específico / etc.)
-2. **`~/.hermes/.env`**: agregar `,NUMERO` al `WHATSAPP_ALLOWED_USERS` (sin `+`, sin `@...`)
-3. **`~/.hermes/config.yaml`**: agregar `'NUMERO'` y `NUMERO@s.whatsapp.net` bajo `whatsapp.allow_from`
-4. **Crear perfil**: `cp contacts/template.md ~/.hermes/whatsapp/contacts/+NUMERO.md` y editar
-5. **Restart**: `tmux kill-session -t hermes-gw && pkill -f bridge.js ; tmux new-session -d -s hermes-gw "..."`
-6. **Verificar la env real del bridge nuevo** (NO confiar en .env ni config.yaml):
+2. **Identificar TODAS las formas del contacto**:
    ```bash
-   sleep 15 && curl -s http://127.0.0.1:3000/health
+   # Buscar phones del contacto
+   grep -lE "<últimos-10-dígitos-del-phone>" ~/.hermes/whatsapp/session/lid-mapping-*_reverse.json
+   # Cada archivo encontrado da un LID. El reverse json contiene el PHONE.
+   ```
+3. **`~/.hermes/.env`**: agregar TODOS los phones y LIDs separados por coma al `WHATSAPP_ALLOWED_USERS` (sin `+`, sin `@...`)
+4. **`~/.hermes/config.yaml`** bajo `whatsapp.allow_from`: agregar para cada phone `'PHONE'` y `PHONE@s.whatsapp.net`; para cada LID `'LID'` y `LID@lid`
+5. **Crear perfil**: `cp contacts/template.md ~/.hermes/whatsapp/contacts/+PHONE.md` y editar (usar el phone moderno como nombre de archivo)
+6. **Restart**: `tmux kill-session -t hermes-gw && pkill -f bridge.js` → esperar 4s para que libere puerto 3000 → `tmux new-session -d -s hermes-gw "HERMES_HOME=/home/ec2-user/.hermes /home/ec2-user/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run > /tmp/hermes-gw.log 2>&1"` (usar paths ABSOLUTOS, no `~`)
+7. **Verificar la env real del bridge nuevo** (NO confiar en .env ni config.yaml):
+   ```bash
+   sleep 30 && curl -s http://127.0.0.1:3000/health
    tr '\0' '\n' < /proc/$(pgrep -f bridge.js)/environ | grep WHATSAPP_ALLOWED_USERS
    tail ~/.hermes/whatsapp/bridge.log | grep "Allowed users"
    ```
-   Las tres líneas DEBEN coincidir con el nuevo valor.
+   Las tres líneas DEBEN coincidir con el nuevo valor — Y debe contener TODOS los LIDs + phones del contacto, no solo el phone.
+
+#### Troubleshooting `allowlist_mismatch` (incidente 2026-05-12)
+- **Síntoma**: el contacto te escribe pero NO ves su mensaje en `tail ~/.hermes/whatsapp/bridge.log` excepto como `{"event":"ignored","reason":"allowlist_mismatch","senderId":"<LID>@lid"}`
+- **Causa raíz**: agregaste solo el phone, no el LID. El bridge identifica al sender por LID, no por phone.
+- **Fix**: buscar el LID del contacto en `lid-mapping-*_reverse.json` y agregarlo en sus 2 formas (LID puro + LID@lid). Restart.
+- **Incidente original**: Nati (12-may 2026) — agregada con 2 phones (sin/con "1") pero sin LIDs. Bridge dropeó 10+ mensajes. Después de agregar LIDs `202958830612615` y `1100803538944`, allowlist completa = 6 entradas en `.env`.
 
 ### Candado para acciones destructivas (ACTIVO en SOUL.md)
 - `~/.hermes/SOUL.md` sección "Candado de acciones destructivas (NO NEGOCIABLE)"

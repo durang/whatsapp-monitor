@@ -19,7 +19,7 @@ Two AI agents on the SAME WhatsApp number:
 
 1. Every value from a real command — never guess
 2. ALWAYS generate ~/whatsapp-status.md — READ the existing file first as canonical template
-3. The dashboard MUST have ALL 17 sections with box-drawing visual format
+3. The dashboard MUST have ALL 18 sections with box-drawing visual format (17 numbered + 3.5)
 4. **ALWAYS verify live state from `/proc/PID/environ`, never trust `~/.hermes/.env` alone** (incident 2026-05-11: bridge env can drift from .env if no restart happened)
 5. **At the end: VERIFY (`bin/verify-status.py`) → render (`bin/render-dashboard.py`) → auto-send (`bin/send-dashboard.sh`). Verify es gate-keeper: si alguna claim falla, NO renderizar ni enviar.**
 6. Show brief text summary + "Reporte completo: ~/whatsapp-status.md · PDF enviado a tu WhatsApp"
@@ -28,12 +28,17 @@ Two AI agents on the SAME WhatsApp number:
 9. Reference ~/OPENCLAW_DASHBOARD.md for the visual standard
 10. **Before any commit: `git fetch && git status -sb`. If "behind", STOP and reconcile (see "Branch hygiene" section). NUNCA push --force a master.**
 
-## THE 17 MANDATORY SECTIONS
+## THE 18 MANDATORY SECTIONS (17 numbered + 3.5)
 
 ```
  1. LIVE STATUS — agents + RAM/DISK/LOAD bars + model chain (auto-refreshed)
  2. 📖 OpenClaw LECTOR — config + groups (names, slugs, prompts) + DMs + permisos
  3. ⚕ Hermes EJECUTOR (default-deny) — config viva + contactos + grupos + capacidades
+ 3.5 📇 ROLES & TEMPLATES — 5 roles canónicos (monitor-silent default, image-only,
+    image-and-video, chat-only, admin-delegate) + ubicación canónica
+    (~/whatsapp-monitor/templates/roles/ git-tracked, ~/.hermes/whatsapp/roles/ deployed
+    auto-restaurable vía sync-templates.sh) + contactos actuales con su rol + flujo
+    add-contact.sh/promote-contact.sh + garantías de no-confusión
  4. 🔐 SEGURIDAD — DEFAULT-DENY · 4 CAPAS REALES (bridge env + DM allow + group allow
     + require_mention) + auditoría cruzada + score
  5. 📊 CÓMO FUNCIONA — 4 sub-secciones explícitas:
@@ -220,7 +225,7 @@ python3 ~/whatsapp-monitor/bin/verify-status.py && \
 ### /whatsapp (default — 7 pasos)
 1. Run data collection (above) — incluye env-drift detector
 2. READ ~/whatsapp-status.md as canonical template
-3. Update each of the 17 sections with fresh values from data collection
+3. Update each of the 18 sections (17 + 3.5) with fresh values from data collection
 4. Run verify: `python3 ~/whatsapp-monitor/bin/verify-status.py` (gate-keeper)
 5. Re-render PDF: `python3 ~/whatsapp-monitor/bin/render-dashboard.py`
 6. Auto-send to Sergio's self-DM: `~/whatsapp-monitor/bin/send-dashboard.sh`

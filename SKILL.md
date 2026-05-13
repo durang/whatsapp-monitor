@@ -339,6 +339,25 @@ Hermes opera bajo **default-deny estricto**: por defecto NADIE puede activarlo e
 - Permite a Sergio mandarse mensajes a sí mismo o "typing" en cualquier chat de su WhatsApp como instrucciones
 - Excepción: status broadcasts y echo-backs se ignoran
 
+### Home channel (WHATSAPP_HOME_CHANNEL) — donde Hermes entrega cron results
+
+Hermes necesita un "home channel" para enviar resultados de cron jobs y mensajes cross-platform. Sin él, aparece un prompt `Type /sethome to make this chat your home channel` en CADA chat donde Hermes responde — incluyendo grupos con terceros, lo cual filtra info y permite hijack accidental del home.
+
+**Canónico (2026-05-13)**: setear el env var directamente, no via `/sethome`:
+```bash
+# ~/.hermes/.env
+WHATSAPP_HOME_CHANNEL=5216624707325@s.whatsapp.net
+WHATSAPP_HOME_CHANNEL_NAME=Sergio (self-DM)
+```
+
+Beneficios:
+- El prompt `Type /sethome...` desaparece de todos los chats
+- Cron results (AgentExpert, Physics Master, etc.) llegan automáticamente al self-DM de Sergio
+- Imposible hijackear accidentalmente desde otro chat
+- Sobrevive restarts (a diferencia de `/sethome` que persiste pero requiere ejecución correcta)
+
+Restart Hermes tras cambiar: `tmux kill-session -t hermes-gw && tmux new-session -d -s hermes-gw "HERMES_HOME=~/.hermes ~/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run > /tmp/hermes-gw.log 2>&1"`
+
 ### Allowlist canónica actual (2026-05-11)
 ```bash
 # ~/.hermes/.env

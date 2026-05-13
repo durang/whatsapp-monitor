@@ -87,6 +87,10 @@ def hermes_config() -> str:
     return read_file("~/.hermes/config.yaml")
 
 
+def hermes_env() -> str:
+    return read_file("~/.hermes/.env")
+
+
 # ─── Verifier registry ───────────────────────────────────
 
 class Claim:
@@ -153,6 +157,12 @@ def claims() -> list[Claim]:
               "~/.hermes/config.yaml whatsapp.require_mention",
               lambda: (("require_mention: true" in hermes_config()),
                        "true" if "require_mention: true" in hermes_config() else "DRIFT")),
+        Claim("§3/§4", "WHATSAPP_HOME_CHANNEL set en .env (apunta a self-DM de Sergio)",
+              "~/.hermes/.env WHATSAPP_HOME_CHANNEL",
+              lambda: ((lambda env=hermes_env(): (
+                  "WHATSAPP_HOME_CHANNEL=5216624707325@s.whatsapp.net" in env
+              ))(),
+                       "set → self-DM" if "WHATSAPP_HOME_CHANNEL=5216624707325@s.whatsapp.net" in hermes_env() else "NOT set — prompt /sethome filtrará info en grupos con terceros")),
         Claim("§3/§4", "Hermes group_allow_from = solo Curso group",
               "~/.hermes/config.yaml whatsapp.group_allow_from",
               lambda: (("120363427149546617@g.us" in hermes_config()),
@@ -242,26 +252,30 @@ def claims() -> list[Claim]:
 
 
 def _check_env_drift(pid: str) -> tuple[bool, str]:
-    """Compare keys defined in .env vs live process env."""
+    """Compare keys defined in .env vs live process env (bridge.js).
+    Only checks keys that bridge.js actually reads — Hermes-only vars
+    (HOME_CHANNEL*, GATEWAY_*) are excluded since bridge.js doesn't use them."""
     if not pid:
         return (False, "no bridge process")
     env_path = HOME / ".hermes/.env"
     if not env_path.is_file():
         return (False, ".env missing")
+    # Bridge.js consumes only these prefixes/exact keys
+    BRIDGE_KEYS = ("WHATSAPP_ALLOWED_USERS", "ADMIN_SLASH_USERS", "WHATSAPP_SELF_DM")
     drifts = []
     for line in env_path.read_text().splitlines():
         line = line.strip()
-        if not line or line.startswith("#") or not line.startswith("WHATSAPP_"):
-            continue
-        if "=" not in line:
+        if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, val = line.partition("=")
+        if key not in BRIDGE_KEYS:
+            continue
         live = proc_environ(pid, key)
         if live != val:
             drifts.append(f"{key}: env='{val}' live='{live}'")
     if drifts:
         return (False, " | ".join(drifts))
-    return (True, "todas las keys del .env coinciden con bridge live")
+    return (True, "bridge keys del .env coinciden con bridge live")
 
 
 # ─── Reporting ───────────────────────────────────────────

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Pre-commit hook — auto-sync SKILL.md to skills monorepo when it changes.
+# Prevents silent drift between whatsapp-monitor/SKILL.md (canonical) and
+# skills/claude/whatsapp/SKILL.md (distribution copy in monorepo).
+#
+# Behavior: if SKILL.md is being committed AND the skills monorepo exists locally,
+# copy the new content to skills/claude/whatsapp/SKILL.md and stage it for the
+# operator to commit there too. Never blocks the commit — just notifies.
+
+set -euo pipefail
+
+# Only act if SKILL.md is in the staged set
+if ! git diff --cached --name-only | grep -qx "SKILL.md"; then
+  exit 0
+fi
+
+SKILLS_REPO="$HOME/skills"
+MONOREPO_FILE="$SKILLS_REPO/claude/whatsapp/SKILL.md"
+
+if [ ! -d "$SKILLS_REPO" ]; then
+  echo "  ⚠️  hook: ~/skills monorepo no encontrado — sync manual cuando lo tengas"
+  exit 0
+fi
+
+if [ ! -f "$MONOREPO_FILE" ]; then
+  echo "  ⚠️  hook: $MONOREPO_FILE no existe — primera vez? créalo + sync manual"
+  exit 0
+fi
+
+# Get the staged content (not working dir, in case partial stage)
+STAGED_CONTENT=$(git show ":SKILL.md" 2>/dev/null || cat SKILL.md)
+
+# Compare against monorepo
+if [ "$STAGED_CONTENT" = "$(cat "$MONOREPO_FILE")" ]; then
+  exit 0  # already in sync
+fi
+
+# Write new content to monorepo + warn operator
+echo "$STAGED_CONTENT" > "$MONOREPO_FILE"
+echo "  📋 hook: SKILL.md sync'd → $MONOREPO_FILE"
+echo "  ⚠️  acuérdate de commitear + push en ~/skills/ también:"
+echo "      cd ~/skills && git add claude/whatsapp/SKILL.md && git commit -m 'sync: whatsapp SKILL.md from whatsapp-monitor' && git push"

@@ -20,13 +20,11 @@ PHONE_PLUS="${1:?Usage: promote-contact.sh +<PHONE> <NEW_ROLE>}"
 NEW_ROLE="${2:?Missing NEW_ROLE — one of: monitor-silent, image-only, image-and-video, chat-only, admin-delegate}"
 
 HOME_DIR="${HOME}"
-PROFILE_PATH="$HOME_DIR/.hermes/whatsapp/contacts/$PHONE_PLUS.md"
-TEMPLATE="$HOME_DIR/.hermes/whatsapp/roles/$NEW_ROLE.md"
-ENV_FILE="$HOME_DIR/.hermes/.env"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Self-heal templates before reading
-[ -x "$SCRIPT_DIR/sync-templates.sh" ] && "$SCRIPT_DIR/sync-templates.sh" >/dev/null
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROFILE_PATH="$HOME_DIR/.hermes/whatsapp/contacts/$PHONE_PLUS.md"
+TEMPLATE="$REPO_DIR/templates/roles/$NEW_ROLE.md"
+ENV_FILE="$HOME_DIR/.hermes/.env"
 
 # Validate
 case "$NEW_ROLE" in

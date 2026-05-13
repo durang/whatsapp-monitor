@@ -50,17 +50,13 @@ case "${2:-}" in
 esac
 
 HOME_DIR="${HOME}"
-ROLES_DIR="$HOME_DIR/.hermes/whatsapp/roles"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROLES_DIR="$REPO_DIR/templates/roles"
 CONTACTS_DIR="$HOME_DIR/.hermes/whatsapp/contacts"
 ENV_FILE="$HOME_DIR/.hermes/.env"
 YAML_FILE="$HOME_DIR/.hermes/config.yaml"
 SESSION_DIR="$HOME_DIR/.hermes/whatsapp/session"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# ── Self-heal templates: sync from canonical (repo) → deployed before reading ──
-if [ -x "$SCRIPT_DIR/sync-templates.sh" ]; then
-  "$SCRIPT_DIR/sync-templates.sh" >/dev/null
-fi
 
 # ── Validate role ──
 case "$ROLE" in

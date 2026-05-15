@@ -109,6 +109,28 @@ DATE=$(date -u +%Y-%m-%d)
 PHONE_PLUS=$(echo "$PHONE" | sed 's/^/+/' | sed -E 's/^\+([0-9])([0-9]{2,3})([0-9]{3})([0-9]{4})$/+\1 \2 \3 \4/')
 SLUG=$(echo "$NAME" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9' | head -c 20)
 
+# Render template — first do {{SECURITY_BLINDADA}} (multiline replace via python),
+# then string placeholders via sed.
+SEC_BLOCK_PATH="$REPO_DIR/templates/security-blindada.md"
+python3 -c "
+import sys
+with open('$TEMPLATE') as f: t = f.read()
+with open('$SEC_BLOCK_PATH') as f: s = f.read()
+if '{{SECURITY_BLINDADA}}' in t:
+    t = t.replace('{{SECURITY_BLINDADA}}', s.strip())
+else:
+    # Auto-inject after first '## ' if template lacks placeholder
+    lines = t.split('\n')
+    for i, line in enumerate(lines):
+        if line.startswith('## '):
+            lines.insert(i, '')
+            lines.insert(i+1, s.strip())
+            lines.insert(i+2, '')
+            break
+    t = '\n'.join(lines)
+sys.stdout.write(t)
+" > "$PROFILE_PATH.tmp"
+
 sed -e "s|{{NAME}}|$NAME|g" \
     -e "s|{{PHONE_DISPLAY}}|$PHONE_PLUS|g" \
     -e "s|{{CITY_SUFFIX}}||g" \
@@ -118,7 +140,9 @@ sed -e "s|{{NAME}}|$NAME|g" \
     -e "s|{{PN_NO_PLUS}}|$PHONE|g" \
     -e "s|{{LID_PRIMARY}}|$LID1|g" \
     -e "s|{{CUSTOM_NOTES}}||g" \
-    "$TEMPLATE" > "$PROFILE_PATH"
+    "$PROFILE_PATH.tmp" > "$PROFILE_PATH"
+
+rm "$PROFILE_PATH.tmp"
 
 echo "✅ Profile written: $PROFILE_PATH"
 

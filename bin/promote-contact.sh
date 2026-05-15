@@ -82,10 +82,23 @@ DATE=$(date -u +%Y-%m-%d)
 PHONE_DISPLAY=$(echo "+$PHONE" | sed -E 's/^\+([0-9])([0-9]{2,3})([0-9]{3})([0-9]{4})$/+\1 \2 \3 \4/')
 SLUG=$(echo "$NAME" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9' | head -c 20)
 
-# Render template with preserved customizations
+# Render template with preserved customizations + inject SECURITY-BLINDADA
 python3 - <<PY
 import re
 template = open("$TEMPLATE").read()
+security = open("$REPO_DIR/templates/security-blindada.md").read().strip()
+# Replace SECURITY placeholder first (multiline)
+if "{{SECURITY_BLINDADA}}" in template:
+    template = template.replace("{{SECURITY_BLINDADA}}", security)
+else:
+    # Auto-inject after first '## ' (defensive — should not be needed with placeholder)
+    lines = template.split("\n")
+    for i, line in enumerate(lines):
+        if line.startswith("## "):
+            lines.insert(i+1, "\n" + security + "\n")
+            break
+    template = "\n".join(lines)
+
 template = template.replace("{{NAME}}", "$NAME")
 template = template.replace("{{PHONE_DISPLAY}}", "$PHONE_DISPLAY")
 template = template.replace("{{CITY_SUFFIX}}", """$OLD_CITY""")

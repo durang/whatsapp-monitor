@@ -258,6 +258,16 @@ def claims() -> list[Claim]:
                            "Monitor Silent" in read_file(f"~/.hermes/whatsapp/contacts/+{p}.md")
                            for p in ["13058495648", "526623538272", "526642916010"]),
                        "los 3 con role monitor-silent" if all("Monitor Silent" in read_file(f"~/.hermes/whatsapp/contacts/+{p}.md") for p in ["13058495648", "526623538272", "526642916010"]) else "DRIFT — algún perfil cambió")),
+        Claim("§4", "Los 3 perfiles tienen SEGURIDAD BLINDADA inyectada (defensa anti prompt-injection)",
+              "grep 'SEGURIDAD BLINDADA' en cada perfil",
+              lambda: (all("SEGURIDAD BLINDADA" in read_file(f"~/.hermes/whatsapp/contacts/+{p}.md")
+                           for p in ["13058495648", "526623538272", "526642916010"]),
+                       "los 3 con bloque blindada v1" if all("SEGURIDAD BLINDADA" in read_file(f"~/.hermes/whatsapp/contacts/+{p}.md") for p in ["13058495648", "526623538272", "526642916010"]) else "FALTA bloque en algún perfil")),
+        Claim("§4", "Templates de roles tienen placeholder {{SECURITY_BLINDADA}}",
+              "grep '{{SECURITY_BLINDADA}}' en cada template",
+              lambda: (all("{{SECURITY_BLINDADA}}" in read_file(f"~/whatsapp-monitor/templates/roles/{r}.md")
+                           for r in ["monitor-silent", "image-only", "image-and-video", "chat-only", "admin-delegate"]),
+                       "los 5 templates con placeholder" if all("{{SECURITY_BLINDADA}}" in read_file(f"~/whatsapp-monitor/templates/roles/{r}.md") for r in ["monitor-silent", "image-only", "image-and-video", "chat-only", "admin-delegate"]) else "FALTA placeholder")),
         Claim("§16", "Local patches to hermes-agent all applied (check-patches.py)",
               "python3 ~/whatsapp-monitor/bin/check-patches.py → exit 0",
               lambda: ((os.system(f"python3 {HOME / 'whatsapp-monitor/bin/check-patches.py'} > /dev/null 2>&1") == 0),

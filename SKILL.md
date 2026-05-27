@@ -166,11 +166,24 @@ stat -c "%a %n" ~/.hermes/config.yaml ~/.hermes/.env ~/.hermes/whatsapp/session/
 ss -tlnp | grep 3000
 tailscale serve status 2>&1 | grep 3000 || echo "BRIDGE NOT EXPOSED"
 
-# ── DETECTED GROUPS ──
-for gid in $(find ~/.openclaw/credentials/whatsapp/default/ -name 'sender-key-*@g.us*' -type f 2>/dev/null | sed 's/.*sender-key-//' | sed 's/--.*//' | sort -u); do
-    name=$(curl -s "http://127.0.0.1:3000/chat/${gid}" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('name','?'))" 2>/dev/null)
+# ── DETECTED GROUPS (canónico: descubrir vía el BRIDGE de Hermes, NO sender-keys) ──
+# DÓNDE BUSCAR LOS GRUPOS (regla canónica, incidente 2026-05-27):
+#   ❌ NO uses ~/.openclaw/credentials/whatsapp/default/sender-key-*@g.us : esas keys
+#      SOLO existen para los grupos que OpenClaw YA monitorea (los del allowlist). Un
+#      grupo no-monitoreado (ej. "JPC - Sales + Marketing") NUNCA tiene sender-key ahí,
+#      así que ese método lo OMITE silenciosamente — parece que "no hay mensajes" cuando
+#      en realidad el grupo existe y está activo.
+#   ✅ USA el bridge de Hermes: está vinculado a TODOS los grupos del número, así que es
+#      la fuente de verdad para DESCUBRIR grupos (monitoreados o no). El bridge.log
+#      registra el chatId de TODO grupo entrante (incluso los que ignora por allowlist).
+# Enumerar grupos vistos por el bridge + resolver su nombre (los WA group-id empiezan en 120363):
+for gid in $(grep -oE '120363[0-9]+@g\.us' ~/.hermes/whatsapp/bridge.log 2>/dev/null | sort -u); do
+    name=$(curl -s --max-time 3 "http://127.0.0.1:3000/chat/${gid}" 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('name','?'))" 2>/dev/null)
     echo "DETECTED:${gid}|name=${name}"
 done
+# Nota: /chat/list del bridge puede venir vacío si la app-state sync de Baileys falla
+# (errores 'critical_unblock_low ... missing key'); por eso enumeramos desde bridge.log,
+# que no depende de esa sincronización.
 
 # ── SYSTEM ──
 uptime; free -m | head -2; df -h / | tail -1

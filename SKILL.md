@@ -26,6 +26,18 @@ Two WhatsApp Web sessions on the SAME number **CONFLICT (status 440)**: one wins
 - **Responding ≠ capturing.** Responding stays gated by `group_allow_from` + `require_mention` + per-contact `.md` profiles. Capturing a group does NOT make Hermes respond there.
 - The patch is fragile across Hermes upgrades — after `git pull` in `hermes-agent`, re-apply via the markers (and `bin/check-patches.py`).
 
+## 🔧 "Hermes no responde" — árbol de diagnóstico (incidentes 2026-05-28/29)
+
+Síntoma: le escribes (DM, o `hermes`/`Hermes` en un grupo de `group_allow_from`) y no contesta. Diagnostica EN ORDEN — no te claves parchando código:
+
+1. **¿El gateway está COLGADO?** (causa #1, visto 2026-05-29 03:14). El service está `active` pero NO procesa: el journal no tiene líneas nuevas en >10 min, aunque el mensaje SÍ llegó al bridge (`grep DEBUG_PASSED_FILTERS ~/.hermes/whatsapp/bridge.log | tail`). **Fix:** `systemctl --user restart hermes-gateway.service`, espera ~20s, re-testea. Al reiniciar puede crashear 1 vez por un race (`[Whatsapp] Poll error: Cannot connect to host 127.0.0.1:3000` — el gateway poll-ea el bridge antes de que levante); systemd lo auto-recupera — confirma `NRestarts` y que quede `active`. Si se cuelga seguido → considerar watchdog.
+
+2. **¿Responde pero "degradado"?** El warning `'NoneType' object is not iterable` (provider `openai-codex` / gpt-5.5) **NO es fatal**: el log muestra `Fallback activated: gpt-5.5 → deepseek-chat` ~1s después y Hermes SÍ responde. No está roto — nunca usa tu gpt-5.5/Codex primario (quema DeepSeek). Fix real (opcional) = actualizar Hermes para el fix oficial de Codex (`agent/transports/codex.py` upstream `fc47b7285`); en TU versión vieja el path real vive en `codex_responses_adapter.py`/`codex_runtime.py`, no calza el parche upstream — por eso NO parchar a mano, mejor actualizar.
+
+3. **¿El bridge perdió la sesión?** `status 440 session conflict` en el journal = OTRA sesión de WhatsApp Web peleando por el número (p.ej. si alguien corrió `openclaw channels login`). **Regla canónica: UNA sola sesión (Hermes). NUNCA re-vincular OpenClaw por QR** (ver sección CANONICAL arriba).
+
+4. **¿La captura no genera páginas?** Si los grupos de captura están quietos, 0 páginas es NORMAL (no es bug). Verifica el tee: `ls ~/.hermes/whatsapp/capture/*.jsonl`. Si hay JSONL pero no hay página en GBrain, corre `python3 ~/whatsapp-monitor/bin/sync-wa-groups-to-gbrain.py`.
+
 ## CRITICAL RULES
 
 1. Every value from a real command — never guess

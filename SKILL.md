@@ -1,6 +1,6 @@
 ---
 name: whatsapp
-description: "WhatsApp Dual-Agent Dashboard v5.9 (OpenClaw + Hermes). Two agents on one number: OpenClaw reads groups silently (→GBrain), Hermes executes ONLY for Sergio under default-deny model. 17-section visual dashboard + 3-phase memory per contact + cross-platform memory + lie-detector verifier (verify→render→send pipeline) + auto-send PDF to Sergio's self-DM. Subcommands: /whatsapp, /whatsapp add, /whatsapp hermes allow/block/list/profile, /whatsapp security."
+description: "WhatsApp Dashboard (Hermes-canonical). ONE WhatsApp link per number = Hermes: responds ONLY to authorized contacts (default-deny + per-contact .md) AND silently captures allowlisted groups → GBrain (bridge tee). OpenClaw holds NO WhatsApp link (2nd session = 440 conflict). 17-section visual dashboard + 3-phase memory per contact + cross-platform memory + lie-detector verifier (verify→render→send pipeline) + auto-send PDF to Sergio's self-DM. Subcommands: /whatsapp, /whatsapp add, /whatsapp hermes allow/block/list/profile, /whatsapp security."
 allowed-tools: Bash Read Write Agent Edit
 user-invocable: true
 distribute-to: [claude, openclaw]
@@ -8,12 +8,23 @@ distribute-to: [claude, openclaw]
 
 # /whatsapp — WhatsApp Dual-Agent Dashboard v5.9
 
-Two AI agents on the SAME WhatsApp number:
+**ONE WhatsApp link per number — Hermes is the canonical agent. (Architecture updated 2026-05-29.)**
 
 | Agent | Role | What it does |
 |-------|------|-------------|
-| 📖 **OpenClaw** | LECTOR | Reads groups silently → saves to GBrain. Never responds. |
-| ⚕ **Hermes** | EJECUTOR | Responds ONLY to Sergio (default-deny). Per-contact .md profiles document intent. 3-phase memory. MCP tools. |
+| ⚕ **Hermes** | EJECUTOR + CAPTURA | Holds the ONLY WhatsApp session. (1) **Responds** ONLY to authorized contacts — per-contact `.md` profiles define what each may do (default-deny + `require_mention`). (2) **Captures** silently: tees messages from capture-allowlisted groups → GBrain. Never responds in capture-only groups. |
+| 📖 **OpenClaw** | ORGANIZADOR (sin link de WhatsApp) | Agent runtime / Telegram / GBrain writer. Does **NOT** hold a WhatsApp session — a 2nd WhatsApp Web link conflicts with Hermes (error 440) and starves. |
+
+## ⚠️ CANONICAL — pick ONE WhatsApp agent, never two (READ FIRST)
+
+Two WhatsApp Web sessions on the SAME number **CONFLICT (status 440)**: one wins, the other goes `app-silent` forever. Confirmed 2026-05-28 — OpenClaw never captured a single message in its entire history because Hermes won the link. **Therefore the canonical setup is:**
+
+- **Hermes holds the one WhatsApp link** and does BOTH jobs (respond + capture).
+- **NEVER run `openclaw channels login --channel whatsapp`** to give OpenClaw its own link — it re-conflicts (chasing a ghost). OpenClaw stays WhatsApp-less.
+- **Capture pipeline (canonical):** bridge tee (local patch in `scripts/whatsapp-bridge/bridge.js`, marked `Local patch 2026-05-28`) → `~/.hermes/whatsapp/capture/<slug>__<YYYY-MM-DD>.jsonl` → `bin/sync-wa-groups-to-gbrain.py` (cron `*/15`) → GBrain page `whatsapp/<slug>/<date>`.
+- **Which groups get captured:** `~/.hermes/whatsapp/capture-groups.json` (`chatId → slug`). Edit that JSON to add/remove capture groups — **no code change**.
+- **Responding ≠ capturing.** Responding stays gated by `group_allow_from` + `require_mention` + per-contact `.md` profiles. Capturing a group does NOT make Hermes respond there.
+- The patch is fragile across Hermes upgrades — after `git pull` in `hermes-agent`, re-apply via the markers (and `bin/check-patches.py`).
 
 ## CRITICAL RULES
 

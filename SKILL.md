@@ -543,35 +543,70 @@ git diff --stat origin/master..HEAD
 
 ## Local patches to hermes-agent (pending upstream)
 
-> **Auto-check tool**: `python3 ~/whatsapp-monitor/bin/check-patches.py` (exit 0 = todos aplicados; 1 = alguno falta). También se ejecuta automáticamente como Claim §16 de `verify-status.py`. Si haces `git pull` en `~/.hermes/hermes-agent/` y un parche se pierde, este script te lo dice y dónde reaplicarlo.
+> **Última revalidación: 2026-06-02 — Hermes upgrade v0.14.0→v0.15.1 (2026.5.29).** 1137 commits pulled. Los 3 patches críticos sobrevivieron + se re-aplicaron. Los patches `display_config.py` + `run.py` (interim_assistant_messages per-platform) + `web_server.py` (dashboard.allowed_hosts) + `codex.py` (NoneType tools=None) fueron DROPPED en esta revalidación: o ya están upstream, o son menores y no vale mantener el drift.
 
-### 1. `send_image` accepts `**kwargs` (2026-05-12)
+> **Auto-check tool**: `python3 ~/whatsapp-monitor/bin/check-patches.py` (exit 0 = todos aplicados; 1 = alguno falta). También se ejecuta automáticamente como Claim §16 de `verify-status.py`. Si haces `git pull` en `~/.hermes/hermes-agent/` y un parche se pierde, este script te lo dice y dónde reaplicarlo. **Pendiente: actualizar el script para reflejar los 3 patches activos post-2026-06-02** (no los 4 anteriores).
 
-**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` ~line 950
+### 1. `send_image` accepts `**kwargs` (2026-05-12, revalidado 2026-06-02)
+
+**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` ~line 1029
 
 **Why**: Upstream commit `33c89e52e` (PR #3571) added `**kwargs` to `send_image_file`, `send_video`, and `send_document` — pero **missed `send_image`** (URL-based, usado cuando Higgsfield devuelve URL). Sin el patch, `Nati hermes hazme una imagen` → genera → `TypeError: send_image() got an unexpected keyword argument 'metadata'` → fallback a URL en texto, NO foto adjunta.
 
 **Marker**: `Local patch 2026-05-12 (pending upstream PR): upstream commit 33c89e52e`
 
-### 2. `require_mention` aplica también a DMs (2026-05-12)
+### 2. `require_mention` aplica también a DMs (2026-05-12, revalidado 2026-06-02)
 
-**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` ~line 440 (en `_should_respond`)
+**File**: `~/.hermes/hermes-agent/gateway/platforms/whatsapp.py` ~line 468 (en `_should_respond`)
 
-**Why**: Por diseño upstream, `require_mention=true` SOLO aplica a grupos. Cualquier DM de un contacto en allowlist activa Hermes automáticamente, sin necesidad de decir "hermes". Eso impide que Sergio pueda chatear normal con un contacto autorizado (ej. Nati) sin que Hermes intercepte. Patch extiende la misma lógica de grupos a DMs: si `require_mention=true`, el DM también requiere trigger. **El self-DM de Sergio (fromMe=true) sigue bypassed en bridge.js**.
+**Why**: Por diseño upstream, `require_mention=true` SOLO aplica a grupos. Cualquier DM de un contacto en allowlist activa Hermes automáticamente, sin necesidad de decir "hermes" / "Hermesbot". Eso impide que Sergio pueda chatear normal con un contacto autorizado (ej. Nati) sin que Hermes intercepte. Patch extiende la misma lógica de grupos a DMs: si `require_mention=true`, el DM también requiere trigger. **El self-DM de Sergio (fromMe=true) sigue bypassed en bridge.js**.
 
 **Marker**: `Local patch 2026-05-12 (pending upstream PR): apply require_mention`
 
-### 3. `interim_assistant_messages` per-platform (2026-05-12)
+### 3. 🔴 CRÍTICO: bridge.js — captura silenciosa de grupos → GBrain (2026-05-28, revalidado 2026-06-02)
 
-**Files**:
-- `~/.hermes/hermes-agent/gateway/display_config.py` (`_GLOBAL_DEFAULTS` agrega `interim_assistant_messages: True`)
-- `~/.hermes/hermes-agent/gateway/run.py` ~line 13390 (cambio `display_config.get(...)` → `resolve_display_setting(user_config, platform_key, ...)`)
+**File**: `~/.hermes/hermes-agent/scripts/whatsapp-bridge/bridge.js` ~líneas 26, 51-58, 275-295
 
-**Why**: Lifecycle status messages como "⚡ Interrupting current task" y "⏳ Retrying in X.Ys" se emiten via `_emit_status` → `status_callback` y se envían en TODAS las plataformas. La config `display.interim_assistant_messages: false` solo silenciaba globalmente — no había forma per-platform. Patch hace que el setting sea overrideable como `tool_progress`: `display.platforms.whatsapp.interim_assistant_messages: false` silencia esos mensajes SOLO en WhatsApp, mientras Telegram y CLI los siguen mostrando.
+**Why**: Hermes es el ÚNICO link de WhatsApp por número (OpenClaw + Hermes en el mismo número → error 440). Pero también queremos capturar TODO el tráfico de grupos para GBrain (decisiones, hilos, fechas). Sin esto, los grupos pasan por Hermes sólo si el contacto está en allowlist + dice "Hermesbot" — lo demás se ignora silenciosamente. Patch agrega un **tee BEFORE de la lógica del allowlist** que copia mensajes de grupos `capture-allowlisted` a un JSONL diario, leído por `bin/sync-wa-groups-to-gbrain.py` (cron `*/15`). El tee corre antes de cualquier filtro de Hermes — captura tráfico independientemente de si Hermes responde o no.
 
-**Markers**:
-- `Local patch 2026-05-12 (pending upstream PR): make interim_assistant_messages`
-- `Local patch 2026-05-12 (pending upstream PR): use resolve_display_setting`
+**Cambios concretos en `bridge.js`:**
+1. Línea ~26 import `fs`: agregar `appendFileSync` al destructure.
+2. Líneas ~51-58 (cerca de IMAGE_CACHE_DIR/etc): agregar bloque:
+```js
+// --- Local patch 2026-05-28: silent group capture → GBrain (tee, never steals from Hermes) ---
+const CAPTURE_DIR = path.join(process.env.HOME || '~', '.hermes', 'whatsapp', 'capture');
+let CAPTURE_GROUPS = {};
+try {
+  CAPTURE_GROUPS = JSON.parse(readFileSync(path.join(process.env.HOME || '~', '.hermes', 'whatsapp', 'capture-groups.json'), 'utf8'));
+  mkdirSync(CAPTURE_DIR, { recursive: true });
+} catch { CAPTURE_GROUPS = {}; }
+```
+3. Dentro del loop `for (const msg of messages.messages)` en `messages.upsert`, justo después de calcular `senderNumber` y ANTES del bloque `if (msg.key.fromMe)`, agregar:
+```js
+// --- Local patch 2026-05-28: silent group capture → GBrain (tee, BEFORE allowlist filter) ---
+try {
+  const _capSlug = isGroup ? CAPTURE_GROUPS[chatId] : null;
+  if (_capSlug) {
+    const _capText = msg.message.conversation
+      || msg.message.extendedTextMessage?.text
+      || msg.message.imageMessage?.caption
+      || msg.message.videoMessage?.caption
+      || '';
+    if (_capText) {
+      const _capDay = new Date().toISOString().slice(0, 10);
+      appendFileSync(
+        path.join(CAPTURE_DIR, `${_capSlug}__${_capDay}.jsonl`),
+        JSON.stringify({ ts: new Date().toISOString(), sender: msg.pushName || senderNumber, fromMe: !!msg.key.fromMe, text: _capText }) + '\n'
+      );
+    }
+  }
+} catch { /* capture must never break the bridge */ }
+```
+4. **Importante**: el patch también rewrites el bloque `if (msg.key.fromMe)` para shared-number mode (Sergio puede mandar mensajes desde su propio número que SE PROCESAN como instrucciones, no como echo-backs). El upstream tenía `if (isGroup || chatId.includes('status')) continue;` que skipea TODOS los fromMe en grupos. Reemplazar por: skip sólo status broadcasts + echo-backs de nuestros propios envíos (`recentlySentIds.has(msg.key.id)`). Esto permite a Sergio escribir en un grupo desde su número y que Hermes lo trate como input (NO como bot-echo).
+
+**Configuración:** `~/.hermes/whatsapp/capture-groups.json` es un mapping `{chatId: slug}`. Sin entradas = no captura. El script `sync-wa-groups-to-gbrain.py` lee el JSONL del día por slug y crea/actualiza la página GBrain `whatsapp/<slug>/<date>`.
+
+**Marker**: `--- Local patch 2026-05-28: silent group capture → GBrain (tee, never steals from Hermes) ---` (este marker aparece en bridge.js dos veces — una en el setup del CAPTURE_DIR y otra en el tee block).
 
 ### Cómo reaplicar tras `git pull` en hermes-agent
 
